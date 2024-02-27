@@ -20,11 +20,7 @@ public abstract class Shader
         throw new Exception($"Shader failed to compile:\n{GL.GetShaderInfoLog(_handle)}");
     }
 
-    public void Delete()
-    {
-        GL.DeleteShader(_handle);
-    }
-
+    public void Delete() => GL.DeleteShader(_handle);
     public static implicit operator int(Shader s) => s._handle;
 }
 

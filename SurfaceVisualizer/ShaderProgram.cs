@@ -32,10 +32,7 @@ public class ShaderProgram
         fragmentShader.Delete();
     }
 
-    public void Use()
-    {
-        GL.UseProgram(_handle);
-    }
-
+    public void Use() => GL.UseProgram(_handle);
+    public int GetAttribLocation(string attribName) => GL.GetAttribLocation(_handle, attribName);
     public static implicit operator int(ShaderProgram p) => p._handle;
 }
