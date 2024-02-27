@@ -30,20 +30,23 @@ public class Window(string title, int width, int height) : GameWindow(GameWindow
         SwapBuffers();
     }
 
-    protected override void OnUpdateFrame(FrameEventArgs e)
-    {
-        base.OnUpdateFrame(e);
-        
-        if (KeyboardState.IsKeyReleased(Keys.Escape))
-        {
-            Close();
-        }
-    }
-
     protected override void OnResize(ResizeEventArgs e)
     {
         base.OnResize(e);
 
         GL.Viewport(0, 0, e.Width, e.Height);
+    }
+
+    protected override void OnKeyUp(KeyboardKeyEventArgs e)
+    {
+        base.OnKeyUp(e);
+
+        // ReSharper disable once SwitchStatementMissingSomeEnumCasesNoDefault
+        switch (e.Key)
+        {
+            case Keys.Escape:
+                Close();
+                break;
+        }
     }
 }
