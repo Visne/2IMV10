@@ -12,4 +12,9 @@
       <PackageReference Include="OpenTK" Version="4.8.2" />
     </ItemGroup>
 
+    <ItemGroup>
+      <EmbeddedResource Include="Shaders\fragment.glsl" />
+      <EmbeddedResource Include="Shaders\vertex.glsl" />
+    </ItemGroup>
+
 </Project>
