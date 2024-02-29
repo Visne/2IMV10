@@ -1,7 +1,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace SurfaceVisualizer;
+namespace SurfaceVisualizer.Shaders;
 
 public class ShaderProgram
 {

@@ -1,6 +1,6 @@
 using OpenTK.Graphics.OpenGL4;
 
-namespace SurfaceVisualizer;
+namespace SurfaceVisualizer.Shaders;
 
 public abstract class Shader
 {
