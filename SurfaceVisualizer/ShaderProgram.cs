@@ -1,4 +1,5 @@
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace SurfaceVisualizer;
 
@@ -32,7 +33,14 @@ public class ShaderProgram
         fragmentShader.Delete();
     }
 
+    public void SetMatrix4(string uniformName, ref Matrix4 value, bool transpose = false)
+        => GL.UniformMatrix4(GetUniformLocation(uniformName), transpose, ref value);
+
+    public void SetMatrix4(string uniformName, ref Matrix4d value, bool transpose = false)
+        => GL.UniformMatrix4(GetUniformLocation(uniformName), transpose, ref value);
+
     public void Use() => GL.UseProgram(_handle);
     public int GetAttribLocation(string attribName) => GL.GetAttribLocation(_handle, attribName);
+    public int GetUniformLocation(string uniformName) => GL.GetUniformLocation(_handle, uniformName);
     public static implicit operator int(ShaderProgram p) => p._handle;
 }
