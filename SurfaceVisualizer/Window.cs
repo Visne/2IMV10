@@ -62,7 +62,7 @@ public class Window(string title, int width, int height) : GameWindow(
 
         _shaderProgram.Use();
 
-        var model = Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_time * 100f));
+        var model = Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_time * -100f));
         var view = Matrix4.CreateTranslation(0.0f, 0.0f, -3f);
         var projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f),
             _windowSize.X / (float) _windowSize.Y, 0.01f, 100.0f);

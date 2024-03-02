@@ -10,12 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="OpenTK" Version="4.8.2"/>
-        <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031"/>
+        <PackageReference Include="ImGui.NET" Version="1.90.1.1" />
+        <PackageReference Include="OpenTK" Version="4.8.2" />
+        <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="EmbeddedResources\**"/>
+        <EmbeddedResource Include="EmbeddedResources\**" />
 
         <None Update="Resources\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
