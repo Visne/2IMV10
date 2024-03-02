@@ -6,15 +6,20 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>nullable</WarningsAsErrors>
+        <PublishAot>true</PublishAot>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="OpenTK" Version="4.8.2" />
+        <PackageReference Include="OpenTK" Version="4.8.2"/>
+        <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031"/>
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Shaders\fragment.glsl" />
-      <EmbeddedResource Include="Shaders\vertex.glsl" />
+        <EmbeddedResource Include="EmbeddedResources\**"/>
+
+        <None Update="Resources\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
 </Project>

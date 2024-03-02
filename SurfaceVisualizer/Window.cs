@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
 
 namespace SurfaceVisualizer;
@@ -18,7 +19,6 @@ public class Window(string title, int width, int height) : GameWindow(
     })
 {
     private ShaderProgram _shaderProgram = null!;
-    private VertexBufferObject _vertexBuffer = null!;
     private VertexArrayObject _vao = null!;
     private Vector2i _windowSize;
     private double _time;
@@ -26,29 +26,30 @@ public class Window(string title, int width, int height) : GameWindow(
     protected override void OnLoad()
     {
         base.OnLoad();
-
-        var vertexSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.Shaders.vertex.glsl");
-        var fragmentSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.Shaders.fragment.glsl");
-        _shaderProgram = new ShaderProgram(vertexSource, fragmentSource);
-
-        _vertexBuffer = new VertexBufferObject(BufferTarget.ArrayBuffer);
-        _vao = new VertexArrayObject();
+        GL.LoadBindings(new GLFWBindingsContext()); // For Native AOT support
 
         GL.Enable(EnableCap.FramebufferSrgb);
         GL.Enable(EnableCap.DepthTest);
         GL.ClearColor(0.05f, 0.05f, 0.05f, 1f);
+        
+        var vertexSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.EmbeddedResources.Shaders.vertex.glsl");
+        var fragmentSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.EmbeddedResources.Shaders.fragment.glsl");
+        _shaderProgram = new ShaderProgram(vertexSource, fragmentSource);
 
-        float[] vertices =
-        [
-            // Positions         // Colors
-            -0.5f, -0.5f, 0f,    1f, 0f, 0f,
-             0.5f, -0.5f, 0f,    0f, 1f, 0f,
-             0.0f,  0.5f, 0f,    0f, 0f, 1f,
-        ];
+        var model = ModelRoot.Load(Path.Combine("Resources", "Models", "monkey.gltf"));
+        var mesh = model.LogicalMeshes[0];
+        var primitive = mesh.Primitives[0];
 
-        _vertexBuffer.SetData(vertices, BufferUsageHint.StaticDraw);
-        _vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 6, 0);
-        _vao.SetAttributePointer<float>(_shaderProgram, "color", 3, 6, 3);
+        _vao = new VertexArrayObject();
+        _vao.SetIndices(primitive.GetIndices());
+
+        var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+        vertexBuffer.SetData(primitive.VertexAccessors["POSITION"], BufferUsageHint.StaticDraw);
+        _vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+
+        var normalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+        normalBuffer.SetData(primitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
+        _vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
     }
 
     protected override void OnRenderFrame(FrameEventArgs e)
@@ -70,7 +71,7 @@ public class Window(string title, int width, int height) : GameWindow(
         _shaderProgram.SetMatrix4("view", ref view);
         _shaderProgram.SetMatrix4("projection", ref projection);
 
-        _vao.DrawTriangles(3);
+        _vao.DrawElements();
 
         SwapBuffers();
     }
