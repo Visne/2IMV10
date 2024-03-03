@@ -20,13 +20,19 @@ public partial class SidePanel : UserControl
 
     private async void OpenFileButtonClicked(object? _1, RoutedEventArgs _2)
     {
-        var storage = TopLevel.GetTopLevel(this)?.StorageProvider!;
+        if (TopLevel.GetTopLevel(this)?.StorageProvider is not { } storage)
+        {
+            // TODO: Implement roper error message
+            throw new Exception($"No {nameof(IStorageProvider)}");
+        }
+
         var file = (await storage.OpenFilePickerAsync(new FilePickerOpenOptions
         {
             Title = "Open model",
             FileTypeFilter =
             [
                 new FilePickerFileType("glTF model (.gltf, .glb)") { Patterns = [ "*.gltf", "*.glb" ] },
+                new FilePickerFileType("All files") { Patterns = [ "*" ] },
             ],
             AllowMultiple = false,
             SuggestedStartLocation = _lastFolder,
@@ -36,6 +42,8 @@ public partial class SidePanel : UserControl
             return;
 
         _lastFolder = await file.GetParentAsync();
+        
+        // TODO: Validate the model and display an error if invalid
         _vm.Model = file.Path.AbsolutePath;
     }
 }

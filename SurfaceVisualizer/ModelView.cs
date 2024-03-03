@@ -49,6 +49,7 @@ public class ModelView : OpenGlControl
         _vao = new VertexArrayObject();
         _vao.SetIndices(primitive.GetIndices());
 
+        // TODO: Display error message if NORMAL or POSITION is missing
         var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
         vertexBuffer.SetData(primitive.VertexAccessors["POSITION"], BufferUsageHint.StaticDraw);
         _vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
@@ -64,6 +65,7 @@ public class ModelView : OpenGlControl
     {
         base.Render(deltaTime);
 
+        // TODO: Refactor this
         if (_vm.Model != _currentModel)
         {
             LoadModel(_vm.Model);
@@ -118,6 +120,8 @@ public class ModelView : OpenGlControl
     {
         base.OnPointerWheelChanged(e);
 
+        // TODO: Clamp
+        // TODO: Make non-linear?
         _zoom -= e.Delta.Y * ZoomSensitivity;
     }
 }

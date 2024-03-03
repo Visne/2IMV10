@@ -14,6 +14,7 @@
         
         <Panel>
             <TextBlock Text="Light color" VerticalAlignment="Center" />
+            <!-- Custom color picker that has these values already set -->
             <ColorPicker Color="{Binding LightColor}"
                          IsColorPaletteVisible="False"
                          IsColorPreviewVisible="False"
