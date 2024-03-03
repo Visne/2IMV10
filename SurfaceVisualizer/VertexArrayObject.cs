@@ -22,7 +22,7 @@ public class VertexArrayObject
             throw new Exception($"Indices not set! Call {nameof(SetIndices)} first.");
 
         Bind();
-        GL.DrawElements(BeginMode.Triangles, indices.Count(), DrawElementsType.UnsignedInt, 0);
+        GL.DrawElements(BeginMode.Triangles, indices.Count, DrawElementsType.UnsignedInt, 0);
     }
 
     public void SetIndices(IList<uint> indices, BufferUsageHint usageHint = BufferUsageHint.StaticDraw)

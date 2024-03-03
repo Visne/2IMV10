@@ -4,17 +4,18 @@ layout (location = 1) in vec3 normal;
 layout (location = 2) in vec3 fragmentPos;
 layout (location = 0) out vec4 outColor;
 
+uniform float ambientStrength;
+uniform float diffuseStrength;
+uniform vec3 lightColor;
+uniform vec3 objectColor;
+uniform vec3 lightPos;
+
 void main()
 {
-    float ambientStrength = 0.3;
-    vec3 lightColor = vec3(1);
-    vec3 objectColor = vec3(0.5);
-    vec3 lightPos = vec3(1, 4, 1);
-
     vec3 ambient = ambientStrength * lightColor * objectColor;
 
     vec3 lightDir = normalize(lightPos - fragmentPos);
-    vec3 diffuse = max(dot(normal, lightDir), 0) * lightColor;
+    vec3 diffuse = diffuseStrength * max(dot(normal, lightDir), 0) * lightColor * objectColor;
 
     outColor = vec4(ambient + diffuse, 1);
 }
