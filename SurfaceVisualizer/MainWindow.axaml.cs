@@ -15,4 +15,5 @@ public class MainWindowViewModel
     public Color LightColor { get; set; } = Colors.White;
     public Color ObjectColor { get; set; } = Color.Parse("#ccc");
     public string Model { get; set; } = Path.Combine("Resources", "Models", "monkey_smooth.gltf");
+    public bool IsWireframe { get; set; }
 }
