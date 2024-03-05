@@ -18,16 +18,6 @@ public partial class SidePanel : UserControl
 
     private IStorageFolder? _lastFolder;
 
-    public void WireframeCheckbox_Checked(object sender, RoutedEventArgs e)
-    {
-        _vm.IsWireframe = true;
-    }
-
-    public void WireframeCheckbox_Unchecked(object sender, RoutedEventArgs e)
-    {
-        _vm.IsWireframe = false;
-    }
-
     private async void OpenFileButtonClicked(object? _1, RoutedEventArgs _2)
     {
         if (TopLevel.GetTopLevel(this)?.StorageProvider is not { } storage)
