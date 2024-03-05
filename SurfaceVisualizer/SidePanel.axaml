@@ -12,6 +12,8 @@
         <TextBlock Text="{Binding #DiffuseStrength.Value, StringFormat='Diffuse strength: {0:0.00}'}" /> 
         <Slider Name="DiffuseStrength" Value="{Binding DiffuseStrength}" Maximum="1" />
         
+		<CheckBox x:Name="WireframeCheckbox" Content="Show wireframe" Checked="WireframeCheckbox_Checked" Unchecked="WireframeCheckbox_Unchecked"/>
+		
         <Panel>
             <TextBlock Text="Light color" VerticalAlignment="Center" />
             <!-- Custom color picker that has these values already set -->

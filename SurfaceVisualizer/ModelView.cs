@@ -1,5 +1,6 @@
 using Avalonia;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
@@ -92,6 +93,15 @@ public class ModelView : OpenGlControl
         _shaderProgram.SetVec3("objectColor", _vm.ObjectColor.Vector());
         _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
 
+
+        if (_vm.IsWireframe)
+        {
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
+        }
+        else
+        {
+            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+        }
         _vao.DrawElements();
     }
 
