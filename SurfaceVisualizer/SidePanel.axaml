@@ -22,7 +22,7 @@
                          IsAlphaEnabled="False"
                          ColorModel="Hsva" />
         </Panel>
-        
+
         <Panel>
             <TextBlock Text="Object color" VerticalAlignment="Center" />
             <ColorPicker Color="{Binding ObjectColor}"

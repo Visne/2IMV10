@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SurfaceVisualizer", "SurfaceVisualizer\SurfaceVisualizer.csproj", "{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaneCutter", "PlaneCutter\PlaneCutter.csproj", "{71A42E83-03B6-4A7E-A75F-56A7356E6DCA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71A42E83-03B6-4A7E-A75F-56A7356E6DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71A42E83-03B6-4A7E-A75F-56A7356E6DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71A42E83-03B6-4A7E-A75F-56A7356E6DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71A42E83-03B6-4A7E-A75F-56A7356E6DCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
