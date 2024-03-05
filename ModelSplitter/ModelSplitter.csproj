@@ -7,4 +7,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
+	<ItemGroup>
+		<PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031" />
+	</ItemGroup>
+	
 </Project>
