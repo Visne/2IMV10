@@ -1,10 +1,12 @@
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.Interactivity;
+using Avalonia.Media;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
+using VisualDebugger;
+using static PlaneCutter.PlaneCutter;
 
 namespace SurfaceVisualizer;
 
@@ -20,6 +22,8 @@ public class ModelView : OpenGlControl
     private VertexArrayObject _vao = null!;
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
+    private VertexArrayObject _planeVao = null!;
+    private readonly List<double> _cuttingPlanes = [];
 
     protected override void OnDataContextChanged(EventArgs e)
     {
@@ -47,6 +51,44 @@ public class ModelView : OpenGlControl
         var mesh = model.LogicalMeshes[0];
         var primitive = mesh.Primitives[0];
 
+        var planes = GetCuttingPlanes(primitive.GetTriangles());
+        
+        Dictionary<double, int> polygonCounts = [];
+        foreach (var (height, segments) in planes)
+        {
+            var polygons = ToPolygons(segments);
+            polygonCounts.Add(height, polygons.Count);
+        }
+        
+        polygonCounts.Add(polygonCounts.Keys.Min() - 0.001, 0);
+        //polygonCounts.Add(polygonCounts.Keys.Max() + 0.001, 0);
+
+        var heights = polygonCounts.Keys.ToList();
+        heights.Sort();
+        heights.Reverse();
+
+        List<double> changePoints = [];
+        double? prev = null;
+        foreach (var height in heights)
+        {
+            if (prev == null)
+            {
+                changePoints.Add(height);
+                prev = polygonCounts[height];
+            }
+            else if (prev != polygonCounts[height])
+            {
+                changePoints.Add(height);
+                prev = polygonCounts[height];
+            }
+        }
+
+        _cuttingPlanes.Clear();
+        for (var i = 1; i < changePoints.Count; i++)
+        {
+            _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
+        }
+
         _vao = new VertexArrayObject();
         _vao.SetIndices(primitive.GetIndices());
 
@@ -58,6 +100,20 @@ public class ModelView : OpenGlControl
         var normalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
         normalBuffer.SetData(primitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
         _vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
+
+        var planeModel = ModelRoot.Load("/home/vince/Desktop/Models/plane.glb");
+        var planePrimitive = planeModel.LogicalMeshes[0].Primitives[0];
+        
+        _planeVao = new VertexArrayObject();
+        _planeVao.SetIndices(planePrimitive.GetIndices());
+        
+        var planeVertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+        planeVertexBuffer.SetData(planePrimitive.VertexAccessors["POSITION"], BufferUsageHint.StaticDraw);
+        _planeVao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+
+        var planeNormalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+        planeNormalBuffer.SetData(planePrimitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
+        _planeVao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
 
         _currentModel = path;
     }
@@ -93,16 +149,22 @@ public class ModelView : OpenGlControl
         _shaderProgram.SetVec3("objectColor", _vm.ObjectColor.Vector());
         _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
 
-
-        if (_vm.IsWireframe)
-        {
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line);
-        }
-        else
-        {
-            GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-        }
+        GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
         _vao.DrawElements();
+
+        if (_vm.ShowCuttingPlanes)
+        {
+            foreach (var cuttingPlane in _cuttingPlanes)
+            {
+                var newModel = Matrix4.CreateTranslation(0, (float)cuttingPlane, 0) * model;
+                _shaderProgram.SetMatrix4("model", ref newModel);
+                _shaderProgram.SetVec3("lightColor", Colors.White.Vector());
+                _shaderProgram.SetVec3("objectColor", Color.Parse("#ccc").Vector());
+
+                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
+                _planeVao.DrawElements();
+            }
+        }
     }
 
     protected override void OnPointerPressed(PointerPressedEventArgs e)
