@@ -6,6 +6,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <WarningsAsErrors>nullable</WarningsAsErrors>
+        <PublishAot>true</PublishAot>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
     </PropertyGroup>
 
@@ -15,18 +16,10 @@
         <PackageReference Include="Avalonia.Diagnostics" Version="11.0.10"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
         <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031" />
-        <PackageReference Include="GeometRi" Version="1.4.0.5" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\PlaneCutter\PlaneCutter.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Compile Update="SidePanel.axaml.cs">
-        <DependentUpon>SidePanel.axaml</DependentUpon>
-        <SubType>Code</SubType>
-      </Compile>
     </ItemGroup>
 
 </Project>

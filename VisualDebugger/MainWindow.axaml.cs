@@ -1,9 +1,8 @@
 using System.Numerics;
 using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Shapes;
 using Avalonia.Media;
-using GeometRi;
+using Common;
 using SharpGLTF.Schema2;
 using static PlaneCutter.PlaneCutter;
 
@@ -12,7 +11,7 @@ namespace VisualDebugger;
 public partial class MainWindow : Window
 {
     private MainWindowViewModel _vm = null!;
-    private readonly List<KeyValuePair<double, List<Segment3d>>> _planes;
+    private readonly List<(double, List<Line>)> _planes;
     private readonly Random _rand = new();
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -25,10 +24,10 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
-        var model = ModelRoot.Load("/home/vince/Desktop/Models/boyssurface.glb");
+        var model = ModelRoot.Load("/home/vince/Desktop/Models/boys_surface_fixed.glb");
         var mesh = model.DefaultScene.VisualChildren.Single().Mesh;
         var primitive = mesh.Primitives.Single();
-        _planes = GetCuttingPlanes(primitive.GetTriangles()).ToList();
+        _planes = GetCuttingPlanes(primitive.GetTriangles());
 
         SidePanel.Height.ValueChanged += (_, _) => Redraw();
         Redraw();
@@ -41,27 +40,26 @@ public partial class MainWindow : Window
         if (_vm.Height >= _planes.Count)
             return;
 
-        var segments = _planes[_vm.Height].Value.Select(s => s.Translate(new Vector3d(0.8, 0, 0.8))).Distinct().ToList();
+        if (((double, List<Line>)?)_planes.ElementAtOrDefault(_vm.Height) is not var (height, poly))
+            return;
+
+        var segments = poly.Select(s => s.Translate(new Vector2(0.8f, 0.8f))).Distinct().ToList();
 
         var polygons = ToPolygons(segments);
-        Console.WriteLine($"polygons: {polygons.Count}");
 
-        List<Line> lines = [];
+        List<Avalonia.Controls.Shapes.Line> lines = [];
         foreach (var polygon in polygons)
         {
             var bytes = new byte[3];
             _rand.NextBytes(bytes);
             var randomColor = new Color(255, bytes[0], bytes[1], bytes[2]);
 
-            for (var i = 1; i < polygon.Count; i++)
+            foreach (var part in polygon.Parts)
             {
-                var p1 = polygon[i - 1];
-                var p2 = polygon[i];
-
-                lines.Add(new Line
+                lines.Add(new Avalonia.Controls.Shapes.Line
                 {
-                    StartPoint = new Point(p1.X * 500, p1.Z * 500),
-                    EndPoint = new Point(p2.X * 500, p2.Z * 500),
+                    StartPoint = new Point(part.A.X * 500, part.A.Y * 500),
+                    EndPoint = new Point(part.B.X * 500, part.B.Y * 500),
                     Stroke = new SolidColorBrush(randomColor),
                 });
             }
@@ -109,27 +107,10 @@ public static class Extensions
 
         var positions = accessor.AsVector3Array();
 
-        IList<Triangle> triangles = [];
-
-        foreach (var (a, b, c) in triangleIndices)
+        return triangleIndices.Select(indices =>
         {
-            var (pa, pb, pc) = (positions[a].Point(), positions[b].Point(), positions[c].Point());
-
-            if (!Point3d.CollinearPoints(pa, pb, pc))
-            {
-                triangles.Add(new Triangle(pa, pb, pc));
-            }
-            else
-            {
-                // TODO: What to do with this? Ignore?
-            }
-        }
-
-        return triangles;
-    }
-
-    public static Point3d Point(this Vector3 vector)
-    {
-        return new Point3d(vector.X, vector.Y, vector.Z);
+            var (a, b, c) = indices;
+            return new Triangle(positions[a], positions[b], positions[c]);
+        }).ToList();
     }
 }

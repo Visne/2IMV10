@@ -14,7 +14,7 @@ public class MainWindowViewModel
     public float DiffuseStrength { get; set; } = 0.5f;
     public Color LightColor { get; set; } = Colors.White;
     public Color ObjectColor { get; set; } = Color.Parse("#ccc");
-    public string Model { get; set; } = "/home/vince/Desktop/Models/boyssurface.glb";
+    public string Model { get; set; } = "/home/vince/Desktop/Models/boys_surface_fixed.glb";
     public bool IsWireframe { get; set; }
     public bool ShowCuttingPlanes { get; set; }
 }

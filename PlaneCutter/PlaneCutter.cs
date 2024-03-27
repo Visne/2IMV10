@@ -1,147 +1,71 @@
-﻿using GeometRi;
+﻿using System.Numerics;
+using Common;
 using JetBrains.Annotations;
+using Triangle = Common.Triangle;
 
 namespace PlaneCutter;
 
 public static class PlaneCutter
 {
     [MustUseReturnValue]
-    public static Dictionary<double, List<Segment3d>> GetCuttingPlanes(IList<Triangle> triangles)
+    public static List<(double, List<Line>)> GetCuttingPlanes(IList<Triangle> triangles)
     {
-        Dictionary<double, List<Segment3d>> planes = new();
+        List<(double, List<Line>)> planes = [];
 
         for (var height = -2.05; height < 2.0; height += 0.01)
         {
             // Horizontal plane at y = height
-            Plane3d plane = new(new Point3d(0, height, 0), new Vector3d(0, 1, 0));
-            List<Segment3d> segments = [];
+            List<Line> segments = [];
 
             foreach (var triangle in triangles)
             {
-                switch (triangle.IntersectionWith(plane))
+                if (triangle.PlaneIntersection(height) is { } line)
                 {
-                    case Segment3d line:
-                        segments.Add(line);
-                        break;
-                    case Triangle t:
-                        segments.Add(new Segment3d(t.A, t.B));
-                        segments.Add(new Segment3d(t.B, t.C));
-                        segments.Add(new Segment3d(t.C, t.A));
-                        break;
-                    case null or Point3d:
-                        // Ignore
-                        break;
+                    segments.Add(line);
                 }
             }
 
             if (segments.Count == 0)
                 continue;
 
-            planes.Add(height, segments);
+            planes.Add((height, segments));
         }
 
         return planes;
     }
     
     [MustUseReturnValue]
-    public static List<List<Point3d>> ToPolygons(List<Segment3d> segments)
+    public static List<MultiLine> ToPolygons(List<Line> lines)
     {
-        List<List<Point3d>> polygons = [];
+        List<MultiLine> multilines = [];
 
-        foreach (var segment in segments)
+        while (lines.Count > 0)
         {
-            foreach (var polygon in polygons.Where(p => p.Count > 0))
+            var multi = new MultiLine(lines.Last());
+            lines.RemoveAt(lines.Count - 1);
+            multilines.Add(multi);
+            
+            while (lines.Count > 0)
             {
-                if (polygon.First() == segment.P1)
+                for (var i = 0; i < lines.Count; i++)
                 {
-                    polygon.Insert(0, segment.P2);
-                }
-                else if (polygon.Last() == segment.P1)
-                {
-                    polygon.Add(segment.P2);
-                }
-                else if (polygon.First() == segment.P2)
-                {
-                    polygon.Insert(0, segment.P1);
-                }
-                else if (polygon.Last() == segment.P2)
-                {
-                    polygon.Add(segment.P1);
-                }
-                else
-                {
-                    continue;
-                }
-                
-                goto NextSegment;
-            }
+                    var line = lines[i];
 
-            List<Point3d> newPolygon = [ segment.P1, segment.P2 ];
-            polygons.Add(newPolygon);
+                    if (multi.TryAdd(line))
+                    {
+                        lines.RemoveAt(i);
+                        break;
+                    }
 
-            NextSegment: ;
-        }
-
-        polygons = polygons.Where(p => p.Count > 1).ToList();
-
-        polygons = MergePolygons(polygons);
-
-        return polygons;
-    }
-
-    [MustUseReturnValue]
-    private static List<List<Point3d>> MergePolygons(List<List<Point3d>> polygons)
-    {
-        // Whether we made a merge in the previous iteration
-        var didMerge = true;
-
-        // If we didn't merge in the previous iteration, all polygons are attached and we can return
-        while (didMerge)
-        {
-            didMerge = false;
-
-            foreach (var polygon in polygons)
-            {
-                var start = polygon.First();
-                var end = polygon.Last();
-
-                if (polygons.Find(p => p != polygon && start == p.Last()) is { } before)
-                {
-                    before.AddRange(polygon);
-                    polygons.Remove(polygon);
-                    didMerge = true;
-                }
-                else if (polygons.Find(p => p != polygon && end == p.First()) is { } after)
-                {
-                    polygon.AddRange(after);
-                    polygons.Remove(after);
-                    didMerge = true;
-                }
-                else if (polygons.Find(p => p != polygon && start == p.First()) is { } beforeFlipped)
-                {
-                    beforeFlipped.Reverse();
-                
-                    polygon.InsertRange(0, beforeFlipped);
-                    polygons.Remove(beforeFlipped);
-                    didMerge = true;
-                }
-                else if (polygons.Find(p => p != polygon && end == p.Last()) is { } afterFlipped)
-                {
-                    afterFlipped.Reverse();
-
-                    polygon.AddRange(afterFlipped);
-                    polygons.Remove(afterFlipped);
-                    didMerge = true;
-                }
-
-                if (didMerge)
-                {
-                    // We removed items from the list which breaks the iteration, so restart it from scratch
-                    break;
+                    if (i == lines.Count - 1)
+                    {
+                        goto PolygonDone;
+                    }
                 }
             }
+            PolygonDone: ;
         }
 
-        return polygons;
+        return multilines;
     }
 }

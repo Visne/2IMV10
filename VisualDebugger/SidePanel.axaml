@@ -3,6 +3,9 @@
              x:Class="VisualDebugger.SidePanel"
              xmlns:visualDebugger="clr-namespace:VisualDebugger"
              x:DataType="visualDebugger:MainWindowViewModel">
+    <UserControl.DataContext>
+        <visualDebugger:MainWindowViewModel />
+    </UserControl.DataContext>
     <StackPanel Margin="20" >
         <TextBlock Text="{Binding #Height.Value, StringFormat='Layer: {0}'}" /> 
         <Slider Name="Height" Value="{Binding Height}" IsSnapToTickEnabled="True" Minimum="0" TickFrequency="1" Maximum="100" />

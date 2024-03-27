@@ -13,4 +13,8 @@
       <PackageReference Include="OneOf" Version="3.0.263" />
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Common\Common.csproj" />
+    </ItemGroup>
+
 </Project>

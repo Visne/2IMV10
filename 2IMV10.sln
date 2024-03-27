@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelSplitter", "ModelSplit
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VisualDebugger", "VisualDebugger\VisualDebugger.csproj", "{B36981D0-8DE2-47FB-A604-50C10CED4726}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{BC5632A5-6868-489D-8C64-8EA270BFDC3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B36981D0-8DE2-47FB-A604-50C10CED4726}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B36981D0-8DE2-47FB-A604-50C10CED4726}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B36981D0-8DE2-47FB-A604-50C10CED4726}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC5632A5-6868-489D-8C64-8EA270BFDC3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC5632A5-6868-489D-8C64-8EA270BFDC3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC5632A5-6868-489D-8C64-8EA270BFDC3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC5632A5-6868-489D-8C64-8EA270BFDC3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
