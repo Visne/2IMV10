@@ -101,7 +101,7 @@ public class ModelView : OpenGlControl
         normalBuffer.SetData(primitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
         _vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
 
-        var planeModel = ModelRoot.Load("/home/vince/Desktop/Models/plane.glb");
+        var planeModel = ModelRoot.Load(Path.Combine("Resources", "Models", "plane.glb"));
         var planePrimitive = planeModel.LogicalMeshes[0].Primitives[0];
         
         _planeVao = new VertexArrayObject();
