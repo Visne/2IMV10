@@ -92,6 +92,11 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
             new(C, A),
         ];
     }
+
+    public (Vector3, Vector3, Vector3) Points()
+    {
+        return (A, B, C);
+    }
 }
 
 public record struct Line3D(Vector3 A, Vector3 B);

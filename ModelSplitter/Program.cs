@@ -1,33 +1,39 @@
 ﻿using System.Numerics;
+using Common;
 using SharpGLTF.Schema2;
+using Triangle = Common.Triangle;
 
 var model = ModelRoot.Load("/Users/joris/Documents/Models/cube.glb");
-var mesh = model.DefaultScene.VisualChildren.Single().Mesh;
-var primitive = mesh.Primitives.Single();
+var mesh = model.LogicalMeshes[0];
+var primitive = mesh.Primitives[0];
 
-float[] splitHeights = [0f];
+List<double> splitHeights = [0f];
 
 ModelSplitter.SplitModel(primitive.GetTriangles(), splitHeights, true);
 
-class ModelSplitter
+public static class ModelSplitter
 {
-
-    static public List<List<(Vector3, Vector3, Vector3)>> SplitModel(IEnumerable<(Vector3, Vector3, Vector3)> model,
-        IEnumerable<float> planes, bool print = false)
+    
+    static public List<List<Triangle>> 
+        SplitModel(IList<Triangle> model,
+        List<double> planes, bool print = false)
     {
-        List<List<(Vector3, Vector3, Vector3)>> models = new List<List<(Vector3, Vector3, Vector3)>>();
+
+        List<List<Triangle>> models = [];
+
         (float bottom, float top) = helperFunctions.getSize(model);
-        planes = planes.Prepend(bottom).Append(top);
-        float[] splits = planes.ToArray();
+        planes.Insert(0, bottom);
+        planes.Insert(planes.Count, top);
 
-        for (int i = 1; i < splits.Length; i++)
+        
+        for (int i = 1; i < planes.Count; i++)
         {
-            var low = splits[i - 1];
-            var high = splits[i];
+            double low = planes[i - 1];
+            double high = planes[i];
 
-            var step = -1*low + ((high - low) / 2);
+            double step = -1*low + ((high - low) / 2);
 
-            List<(Vector3, Vector3, Vector3)> splitTriangles = new List<(Vector3, Vector3, Vector3)>();
+            List<Triangle> splitTriangles = new List<Triangle>();
 
             foreach (var (a1, b1, c1) in model)
             {
@@ -57,7 +63,7 @@ class ModelSplitter
                 if (a.Y >= low & c.Y <= high)
                 {
                     //Fully inside current split
-                    splitTriangles.Add(moveTriangle((a, b, c), step));
+                    splitTriangles.Add(moveTriangle(new Triangle(a, b, c), step));
                 }
                 else
                 if (c.Y <= low || a.Y >= high)
@@ -71,13 +77,13 @@ class ModelSplitter
                     if (b.Y > low)
                     {
                         //One vertex below bottom
-                        splitTriangles.Add(moveTriangle((helperFunctions.getIntersection(a, c, low), b, c), step));
-                        splitTriangles.Add(moveTriangle((helperFunctions.getIntersection(a, c, low), helperFunctions.getIntersection(a, b, low), b), step));
+                        splitTriangles.Add(moveTriangle(new Triangle(helperFunctions.getIntersection(a, c, low), b, c), step));
+                        splitTriangles.Add(moveTriangle(new Triangle(helperFunctions.getIntersection(a, c, low), helperFunctions.getIntersection(a, b, low), b), step));
                     }
                     else
                     {
                         //Two vertices below bottom
-                        splitTriangles.Add(moveTriangle((helperFunctions.getIntersection(a, c, low), helperFunctions.getIntersection(b, c, low), c), step));
+                        splitTriangles.Add(moveTriangle(new Triangle(helperFunctions.getIntersection(a, c, low), helperFunctions.getIntersection(b, c, low), c), step));
                     }
                 }
                 else
@@ -86,13 +92,13 @@ class ModelSplitter
                     if (b.Y < high)
                     {
                         //One vertex Above top
-                        splitTriangles.Add(moveTriangle((helperFunctions.getIntersection(a, c, high), a, b), step));
-                        splitTriangles.Add(moveTriangle((helperFunctions.getIntersection(a, c, high), helperFunctions.getIntersection(b, c, high), b), step));
+                        splitTriangles.Add(moveTriangle(new Triangle(helperFunctions.getIntersection(a, c, high), a, b), step));
+                        splitTriangles.Add(moveTriangle(new Triangle(helperFunctions.getIntersection(a, c, high), helperFunctions.getIntersection(b, c, high), b), step));
                     }
                     else
                     {
                         //Two vertices Above top
-                        splitTriangles.Add(moveTriangle((helperFunctions.getIntersection(a, c, high), helperFunctions.getIntersection(a, b, high), a), step));
+                        splitTriangles.Add(moveTriangle(new Triangle(helperFunctions.getIntersection(a, c, high), helperFunctions.getIntersection(a, b, high), a), step));
                     }
                 }
             }
@@ -107,20 +113,22 @@ class ModelSplitter
 
     }
 
-    static (Vector3, Vector3, Vector3) moveTriangle((Vector3 a, Vector3 b, Vector3 c) triangle, float  step)
+    static Triangle moveTriangle(Triangle triangle, double  stepinput)
     {
-        triangle.a.Y -= step;
-        triangle.b.Y -= step;
-        triangle.c.Y -= step;
-        return(triangle.a, triangle.b, triangle.c);
+        float step = (float)(stepinput);
+        Vector3 A = new Vector3(triangle.A.X, triangle.A.Y - step, triangle.A.Z);
+        Vector3 B = new Vector3(triangle.B.X, triangle.B.Y - step, triangle.B.Z);
+        Vector3 C = new Vector3(triangle.C.X, triangle.C.Y - step, triangle.C.Z);
+        return new Triangle(A, B, C);
     }
 
 }
 
 class helperFunctions
 {
-    static public Vector3 getIntersection(Vector3 A, Vector3 B, float Height)
+    static public Vector3 getIntersection(Vector3 A, Vector3 B, double HeightInput)
     {
+        float Height = (float)(HeightInput);
         float totalLength = Vector3.Distance(A, B);
         float t = (Height - A.Y) / (B.Y - A.Y);
 
@@ -129,13 +137,15 @@ class helperFunctions
         return result;
     }
 
-    static public (float bottom, float top) getSize(IEnumerable<(Vector3 A, Vector3 B, Vector3 C)> model)
+    static public (float bottom, float top) getSize(IList<Triangle> model)
     {
         float bottom = float.MaxValue;
         float top = float.MinValue;
 
-        foreach (var (a, b, c) in model)
+        foreach (var triangle in model)
         {
+            var a = triangle.A; var b = triangle.B; var c = triangle.C;
+
             if (a.Y < bottom)
             {
                 bottom = a.Y;
@@ -165,7 +175,7 @@ class helperFunctions
         return (bottom, top);
     }
 
-    static public void printModels(List<List<(Vector3 A, Vector3 B, Vector3 C)>> themodel)
+    static public void printModels(List<List<Triangle>> themodel)
     {
         var modelArray = themodel.ToArray();
         Console.WriteLine(modelArray.Length);
@@ -186,16 +196,17 @@ class helperFunctions
 
 internal static class MeshPrimitiveExtensions
 {
-    public static IEnumerable<(Vector3 A, Vector3 B, Vector3 C)> GetTriangles(this MeshPrimitive primitive)
+    public static IList<Triangle> GetTriangles(this MeshPrimitive primitive)
     {
         var triangleIndices = primitive.GetTriangleIndices();
         var accessor = primitive.VertexAccessors.Single(a => a.Key == "POSITION").Value;
 
         var positions = accessor.AsVector3Array();
 
-        foreach (var (a, b, c) in triangleIndices)
+        return triangleIndices.Select(indices =>
         {
-            yield return (positions[a], positions[b], positions[c]);
-        }
+            var (a, b, c) = indices;
+            return new Triangle(positions[a], positions[b], positions[c]);
+        }).ToList();
     }
 }
