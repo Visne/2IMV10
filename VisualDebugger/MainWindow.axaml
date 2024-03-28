@@ -1,0 +1,17 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:visualDebugger="clr-namespace:VisualDebugger"
+        x:Class="VisualDebugger.MainWindow"
+        x:DataType="visualDebugger:MainWindowViewModel"
+        Width="1200" Height="800"
+        MinWidth="100" MinHeight="100"
+        Title="Visual Debugger">
+    <Window.DataContext>
+        <visualDebugger:MainWindowViewModel />
+    </Window.DataContext>
+    <Grid ColumnDefinitions="*,10,400">
+        <Canvas Name="Canvas" />
+        <GridSplitter Grid.Column="1" />
+        <visualDebugger:SidePanel DataContext="{Binding}" Grid.Column="2" Name="SidePanel" />
+    </Grid>
+</Window>
