@@ -3,23 +3,25 @@ using Common;
 using SharpGLTF.Schema2;
 using Triangle = Common.Triangle;
 
-var model = ModelRoot.Load("/Users/joris/Documents/Models/cube.glb");
-var mesh = model.LogicalMeshes[0];
-var primitive = mesh.Primitives[0];
+//var model = ModelRoot.Load("/Users/joris/Documents/Models/cube.glb");
+//var mesh = model.LogicalMeshes[0];
+//var primitive = mesh.Primitives[0];
 
-List<double> splitHeights = [0f];
+//List<double> splitHeights = [0f];
 
-ModelSplitter.SplitModel(primitive.GetTriangles(), splitHeights, true);
+//ModelSplitter.SplitModel(primitive.GetTriangles(), splitHeights, true);
+
+namespace ModelSplitter;
 
 public static class ModelSplitter
 {
     
-    static public List<List<Triangle>> 
+    static public List<IList<Triangle>> 
         SplitModel(IList<Triangle> model,
         List<double> planes, bool print = false)
     {
 
-        List<List<Triangle>> models = [];
+        List<IList<Triangle>> models = [];
 
         (float bottom, float top) = helperFunctions.getSize(model);
         planes.Insert(0, bottom);
@@ -31,9 +33,10 @@ public static class ModelSplitter
             double low = planes[i - 1];
             double high = planes[i];
 
-            double step = -1*low + ((high - low) / 2);
+            double step = i * .5f;
+            //double step = -1*low + ((high - low) / 2);
 
-            List<Triangle> splitTriangles = new List<Triangle>();
+            IList<Triangle> splitTriangles = new List<Triangle>();
 
             foreach (var (a1, b1, c1) in model)
             {
@@ -175,7 +178,7 @@ class helperFunctions
         return (bottom, top);
     }
 
-    static public void printModels(List<List<Triangle>> themodel)
+    static public void printModels(List<IList<Triangle>> themodel)
     {
         var modelArray = themodel.ToArray();
         Console.WriteLine(modelArray.Length);

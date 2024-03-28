@@ -11,21 +11,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.10"/>
-        <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.0.10"/>
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.10"/>
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10"/>
-        <PackageReference Include="OpenTK.Graphics" Version="4.8.2"/>
-        <PackageReference Include="OpenTK.Input" Version="4.8.2"/>
-        <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031"/>
+        <PackageReference Include="Avalonia" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+        <PackageReference Include="OpenTK.Graphics" Version="4.8.2" />
+        <PackageReference Include="OpenTK.Input" Version="4.8.2" />
+        <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031" />
     </ItemGroup>
 
     <ItemGroup Condition="$(Configuration) == Debug">
-        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.10"/>
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.0.10" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="EmbeddedResources\**"/>
+        <EmbeddedResource Include="EmbeddedResources\**" />
 
         <None Update="Resources\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -33,8 +33,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\PlaneCutter\PlaneCutter.csproj"/>
-        <ProjectReference Include="..\VisualDebugger\VisualDebugger.csproj"/>
+        <ProjectReference Include="..\ModelSplitter\ModelSplitter.csproj" />
+        <ProjectReference Include="..\PlaneCutter\PlaneCutter.csproj" />
+        <ProjectReference Include="..\VisualDebugger\VisualDebugger.csproj" />
     </ItemGroup>
 
 </Project>

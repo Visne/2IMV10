@@ -7,6 +7,7 @@ using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
 using VisualDebugger;
 using static PlaneCutter.PlaneCutter;
+using static ModelSplitter.ModelSplitter;
 
 namespace SurfaceVisualizer;
 
@@ -53,6 +54,7 @@ public class ModelView : OpenGlControl
 
         var planes = GetCuttingPlanes(primitive.GetTriangles());
         
+        //TODO this should be moved into the planecutter class.
         Dictionary<double, int> polygonCounts = [];
         foreach (var (height, segments) in planes)
         {
@@ -88,6 +90,15 @@ public class ModelView : OpenGlControl
         {
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
+
+        //Getting the split up models
+        var models = SplitModel(primitive.GetTriangles(), _cuttingPlanes);
+
+        models.ForEach(model =>
+        {
+           //TODO handle the model
+        });
+
 
         _vao = new VertexArrayObject();
         _vao.SetIndices(primitive.GetIndices());
