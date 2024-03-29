@@ -6,6 +6,7 @@ using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
 using VisualDebugger;
+using System.Numerics;
 using static PlaneCutter.PlaneCutter;
 using static ModelSplitter.ModelSplitter;
 
@@ -21,6 +22,7 @@ public class ModelView : OpenGlControl
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
     private VertexArrayObject _vao = null!;
+    private List<VertexArrayObject> _modelVaos = new List<VertexArrayObject>();
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
     private VertexArrayObject _planeVao = null!;
@@ -94,9 +96,19 @@ public class ModelView : OpenGlControl
         //Getting the split up models
         var models = SplitModel(primitive.GetTriangles(), _cuttingPlanes);
 
+        _modelVaos.Clear();
         models.ForEach(model =>
         {
-           //TODO handle the model
+            var (vertices, indices) = GetVerticesAndIndicesFromTriangles(model);
+            //TODO handle the model
+            var vao = new VertexArrayObject();
+            vao.SetIndices(indices);
+
+            var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            vertexBuffer.SetData(vertices, BufferUsageHint.StaticDraw);
+            vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+
+            _modelVaos.Add(vao);
         });
 
 
@@ -158,7 +170,7 @@ public class ModelView : OpenGlControl
 
         _shaderProgram.SetVec3("lightColor", _vm.LightColor.Vector());
         _shaderProgram.SetVec3("objectColor", _vm.ObjectColor.Vector());
-        _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
+        _shaderProgram.SetVec3("lightPos", new OpenTK.Mathematics.Vector3(0, 10, 5));
 
         GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
         _vao.DrawElements();
@@ -175,6 +187,11 @@ public class ModelView : OpenGlControl
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                 _planeVao.DrawElements();
             }
+        }
+
+        foreach (var vao in _modelVaos)
+        {
+            vao.DrawElements();
         }
     }
 
@@ -206,5 +223,27 @@ public class ModelView : OpenGlControl
         // TODO: Clamp
         // TODO: Make non-linear?
         _zoom -= e.Delta.Y * ZoomSensitivity;
+    }
+
+    public static (IList<System.Numerics.Vector3> vertices, IList<uint> indices) GetVerticesAndIndicesFromTriangles(IList<Common.Triangle> triangles)
+    {
+        List<System.Numerics.Vector3> vertices = new List<System.Numerics.Vector3>();
+        IList<uint> indices = new List<uint>();
+
+        foreach (var triangle in triangles)
+        {
+            // Add the vertices of the triangle to the vertices list
+            vertices.Add(triangle.A);
+            vertices.Add(triangle.B);
+            vertices.Add(triangle.C);
+
+            // Add the indices of the triangle to the indices list
+            // The index of a vertex is its position in the vertices list
+            indices.Add((uint)(vertices.Count - 3)); // Index of triangle.A
+            indices.Add((uint)(vertices.Count - 2)); // Index of triangle.B
+            indices.Add((uint)(vertices.Count - 1)); // Index of triangle.C
+        }
+
+        return (vertices, indices);
     }
 }

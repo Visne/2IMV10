@@ -16,7 +16,7 @@ namespace ModelSplitter;
 public static class ModelSplitter
 {
     
-    static public List<IList<Triangle>> 
+    public static List<IList<Triangle>> 
         SplitModel(IList<Triangle> model,
         List<double> planes, bool print = false)
     {
