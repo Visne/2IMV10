@@ -16,4 +16,5 @@ public class MainWindowViewModel
     public Color ObjectColor { get; set; } = Color.Parse("#ccc");
     public string Model { get; set; } = Path.Combine("Resources", "Models", "monkey_smooth.gltf");
     public bool IsWireframe { get; set; }
+    public bool ShowCuttingPlanes { get; set; }
 }

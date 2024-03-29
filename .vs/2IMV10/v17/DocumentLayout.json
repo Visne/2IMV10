@@ -1,0 +1,105 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|c:\\users\\20193609\\documents\\auniversiteit\\master\\jaar 1\\2imv10 vcp\\2imv10\\surfacevisualizer\\modelview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|solutionrelative:surfacevisualizer\\modelview.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|c:\\users\\20193609\\documents\\auniversiteit\\master\\jaar 1\\2imv10 vcp\\2imv10\\surfacevisualizer\\mainwindow.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|solutionrelative:surfacevisualizer\\mainwindow.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|c:\\users\\20193609\\documents\\auniversiteit\\master\\jaar 1\\2imv10 vcp\\2imv10\\surfacevisualizer\\program.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|solutionrelative:surfacevisualizer\\program.axaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2EB70165-3BCC-49F0-BCFC-B2E2EB738C51}|ModelSplitter\\ModelSplitter.csproj|c:\\users\\20193609\\documents\\auniversiteit\\master\\jaar 1\\2imv10 vcp\\2imv10\\modelsplitter\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{2EB70165-3BCC-49F0-BCFC-B2E2EB738C51}|ModelSplitter\\ModelSplitter.csproj|solutionrelative:modelsplitter\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|c:\\users\\20193609\\documents\\auniversiteit\\master\\jaar 1\\2imv10 vcp\\2imv10\\surfacevisualizer\\sidepanel.axaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}",
+      "RelativeMoniker": "D:0:0:{91CB857F-4D0A-4B17-8F9F-D91F2D79E2CB}|SurfaceVisualizer\\SurfaceVisualizer.csproj|solutionrelative:surfacevisualizer\\sidepanel.axaml||{FA3CD31E-987B-443A-9B81-186104E8DAC1}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.axaml.cs",
+              "DocumentMoniker": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\MainWindow.axaml.cs",
+              "RelativeDocumentMoniker": "SurfaceVisualizer\\MainWindow.axaml.cs",
+              "ToolTip": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\MainWindow.axaml.cs",
+              "RelativeToolTip": "SurfaceVisualizer\\MainWindow.axaml.cs",
+              "ViewState": "AQIAAAUAAAAAAAAAAAAxwBMAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-28T12:24:54.942Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "ModelView.cs",
+              "DocumentMoniker": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\ModelView.cs",
+              "RelativeDocumentMoniker": "SurfaceVisualizer\\ModelView.cs",
+              "ToolTip": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\ModelView.cs",
+              "RelativeToolTip": "SurfaceVisualizer\\ModelView.cs",
+              "ViewState": "AQIAAEAAAAAAAAAAAIA9wEsAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-06T12:56:58.262Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "Program.axaml.cs",
+              "DocumentMoniker": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\Program.axaml.cs",
+              "RelativeDocumentMoniker": "SurfaceVisualizer\\Program.axaml.cs",
+              "ToolTip": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\Program.axaml.cs",
+              "RelativeToolTip": "SurfaceVisualizer\\Program.axaml.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-06T14:32:01.469Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "SidePanel.axaml",
+              "DocumentMoniker": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\SidePanel.axaml",
+              "RelativeDocumentMoniker": "SurfaceVisualizer\\SidePanel.axaml",
+              "ToolTip": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\SurfaceVisualizer\\SidePanel.axaml",
+              "RelativeToolTip": "SurfaceVisualizer\\SidePanel.axaml",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAAAAAAyAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001001|",
+              "WhenOpened": "2024-03-06T14:31:59.648Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "Program.cs",
+              "DocumentMoniker": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\ModelSplitter\\Program.cs",
+              "RelativeDocumentMoniker": "ModelSplitter\\Program.cs",
+              "ToolTip": "C:\\Users\\20193609\\Documents\\aUniversiteit\\Master\\Jaar 1\\2IMV10 VCP\\2IMV10\\ModelSplitter\\Program.cs",
+              "RelativeToolTip": "ModelSplitter\\Program.cs",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-03-06T14:08:07.075Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
