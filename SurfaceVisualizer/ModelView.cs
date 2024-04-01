@@ -6,7 +6,7 @@ using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
 using VisualDebugger;
-using System.Numerics;
+using Common;
 using static PlaneCutter.PlaneCutter;
 using static ModelSplitter.ModelSplitter;
 
@@ -22,7 +22,7 @@ public class ModelView : OpenGlControl
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
     private VertexArrayObject _vao = null!;
-    private List<VertexArrayObject> _modelVaos = new List<VertexArrayObject>();
+    private readonly List<VertexArrayObject> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
     private VertexArrayObject _planeVao = null!;
@@ -56,7 +56,7 @@ public class ModelView : OpenGlControl
 
         var planes = GetCuttingPlanes(primitive.GetTriangles());
         
-        //TODO this should be moved into the planecutter class.
+        // TODO this should be moved into the planecutter class.
         Dictionary<double, int> polygonCounts = [];
         foreach (var (height, segments) in planes)
         {
@@ -93,14 +93,13 @@ public class ModelView : OpenGlControl
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
 
-        //Getting the split up models
-        var models = SplitModel(primitive.GetTriangles(), _cuttingPlanes);
+        var models = SplitModel(new Model(primitive.GetTriangles()), _cuttingPlanes);
 
         _modelVaos.Clear();
-        models.ForEach(model =>
+        models.ForEach(m =>
         {
-            var (vertices, indices) = GetVerticesAndIndicesFromTriangles(model);
-            //TODO handle the model
+            var (vertices, indices) = GetVerticesAndIndicesFromTriangles(m.Triangles);
+            // TODO handle the model
             var vao = new VertexArrayObject();
             vao.SetIndices(indices);
 
@@ -110,7 +109,6 @@ public class ModelView : OpenGlControl
 
             _modelVaos.Add(vao);
         });
-
 
         _vao = new VertexArrayObject();
         _vao.SetIndices(primitive.GetIndices());
@@ -225,10 +223,10 @@ public class ModelView : OpenGlControl
         _zoom -= e.Delta.Y * ZoomSensitivity;
     }
 
-    public static (IList<System.Numerics.Vector3> vertices, IList<uint> indices) GetVerticesAndIndicesFromTriangles(IList<Common.Triangle> triangles)
+    public static (IList<System.Numerics.Vector3> vertices, IList<uint> indices) GetVerticesAndIndicesFromTriangles(IEnumerable<Triangle> triangles)
     {
-        List<System.Numerics.Vector3> vertices = new List<System.Numerics.Vector3>();
-        IList<uint> indices = new List<uint>();
+        List<System.Numerics.Vector3> vertices = [];
+        List<uint> indices = [];
 
         foreach (var triangle in triangles)
         {

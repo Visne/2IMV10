@@ -65,6 +65,16 @@ public record MultiLine
     }
 }
 
+public readonly record struct Model(List<Triangle> Triangles)
+{
+    public (float bottom, float top) VerticalBounds()
+    {
+        var vertices = Triangles.SelectMany(t => new[] { t.A.Y, t.B.Y, t.C.Y }).ToList();
+
+        return (vertices.Min(), vertices.Max());
+    }
+}
+
 public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -91,11 +101,6 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
             new(B, C),
             new(C, A),
         ];
-    }
-
-    public (Vector3, Vector3, Vector3) Points()
-    {
-        return (A, B, C);
     }
 }
 

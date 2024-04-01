@@ -100,7 +100,7 @@ public class MainWindowViewModel
 
 public static class Extensions
 {
-    public static IList<Triangle> GetTriangles(this MeshPrimitive primitive)
+    public static List<Triangle> GetTriangles(this MeshPrimitive primitive)
     {
         var triangleIndices = primitive.GetTriangleIndices();
         var accessor = primitive.VertexAccessors.Single(a => a.Key == "POSITION").Value;
