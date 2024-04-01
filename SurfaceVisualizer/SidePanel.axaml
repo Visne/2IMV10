@@ -8,12 +8,10 @@
 
         <TextBlock Text="{Binding #AmbientStrength.Value, StringFormat='Ambient strength: {0:0.00}'}" /> 
         <Slider Name="AmbientStrength" Value="{Binding AmbientStrength}" Maximum="1" />
-        
+
         <TextBlock Text="{Binding #DiffuseStrength.Value, StringFormat='Diffuse strength: {0:0.00}'}" /> 
         <Slider Name="DiffuseStrength" Value="{Binding DiffuseStrength}" Maximum="1" />
-        
-		<CheckBox x:Name="WireframeCheckbox" Content="Show wireframe" IsChecked="{Binding IsWireframe}"/>
-		
+
         <Panel>
             <TextBlock Text="Light color" VerticalAlignment="Center" />
             <!-- Custom color picker that has these values already set -->
@@ -34,5 +32,8 @@
                          IsAlphaEnabled="False"
                          ColorModel="Hsva" />
         </Panel>
+
+        <CheckBox Content="Show wireframe" IsChecked="{Binding IsWireframe}"/>
+        <CheckBox Content="Show cutting planes" IsChecked="{Binding ShowCuttingPlanes}"/>
     </StackPanel>
 </UserControl>
