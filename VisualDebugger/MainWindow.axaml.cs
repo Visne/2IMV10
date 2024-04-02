@@ -27,7 +27,7 @@ public partial class MainWindow : Window
         var model = ModelRoot.Load("/home/vince/Desktop/Models/boys_surface_fixed.glb");
         var mesh = model.DefaultScene.VisualChildren.Single().Mesh;
         var primitive = mesh.Primitives.Single();
-        _planes = GetCuttingPlanes(primitive.GetTriangles());
+        _planes = GetCuttingPlanes(new Model(primitive.GetTriangles()));
 
         SidePanel.Height.ValueChanged += (_, _) => Redraw();
         Redraw();

@@ -8,7 +8,7 @@ namespace PlaneCutter;
 public static class PlaneCutter
 {
     [MustUseReturnValue]
-    public static List<(double, List<Line>)> GetCuttingPlanes(IList<Triangle> triangles)
+    public static List<(double, List<Line>)> GetCuttingPlanes(Model model)
     {
         List<(double, List<Line>)> planes = [];
 
@@ -17,7 +17,7 @@ public static class PlaneCutter
             // Horizontal plane at y = height
             List<Line> segments = [];
 
-            foreach (var triangle in triangles)
+            foreach (var triangle in model.Triangles)
             {
                 if (triangle.PlaneIntersection(height) is { } line)
                 {

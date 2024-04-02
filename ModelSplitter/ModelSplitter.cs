@@ -16,48 +16,32 @@ public static class ModelSplitter
 {
     public static List<Model> SplitModel(Model model, List<double> planes, bool print = false)
     {
-        List<Model> models = [];
+        List<Model> subModels = [];
 
         var (bottom, top) = model.VerticalBounds();
+        planes = [..planes]; // Copy list
         planes.Insert(0, bottom);
         planes.Add(top);
+        planes.Sort();
 
         for (var i = 1; i < planes.Count; i++)
         {
-            var low = (float)planes[i - 1];
-            var high = (float)planes[i];
+            var low = planes[i - 1];
+            var high = planes[i];
 
-            var step = i * .5f;
-            //double step = -1*low + ((high - low) / 2);
+            var step = (float)i;
+            //var step = -1 * low + (high - low) / 2;
 
             Model subModel = new([]);
 
-            foreach (var triangle in model.Triangles)
+            foreach (var triangle in model.Triangles.Select(t => t.SortHeight()))
             {
                 var (a, b, c) = triangle;
-                if (a.Y > b.Y)
-                {
-                    (a, b) = (b, a);
-                }
-
-                if (b.Y > c.Y)
-                {
-                    (b, c) = (c, b);
-                }
-
-                if (a.Y > b.Y)
-                {
-                    // TODO: Don't think this is correct?
-                    var z = a;
-                    b = a;
-                    a = z;
-                }
-                // Sorted the values, now a is smallest and c is highest
 
                 if (a.Y >= low & c.Y <= high)
                 {
                     // Fully inside current split
-                    subModel.Triangles.Add(MoveTriangle(new Triangle(a, b, c), step));
+                    subModel.Add(triangle);
                 }
                 else if (c.Y <= low || a.Y >= high)
                 {
@@ -69,60 +53,51 @@ public static class ModelSplitter
                     if (b.Y > low)
                     {
                         // One vertex below bottom
-                        subModel.Triangles.Add(MoveTriangle(new Triangle(HelperFunctions.GetIntersection(a, c, low), b, c), step));
-                        subModel.Triangles.Add(MoveTriangle(new Triangle(HelperFunctions.GetIntersection(a, c, low), HelperFunctions.GetIntersection(a, b, low), b), step));
+                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(low)!.Value, b, c));
+                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(low)!.Value, new Line3D(a, b).PlaneIntersection(low)!.Value, b));
                     }
                     else
                     {
                         // Two vertices below bottom
-                        subModel.Triangles.Add(MoveTriangle(new Triangle(HelperFunctions.GetIntersection(a, c, low), HelperFunctions.GetIntersection(b, c, low), c), step));
+                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(low)!.Value, new Line3D(b, c).PlaneIntersection(low)!.Value, c));
                     }
                 }
                 else if (c.Y > high)
                 {
                     if (b.Y < high)
                     {
-                        // One vertex Above top
-                        subModel.Triangles.Add(MoveTriangle(new Triangle(HelperFunctions.GetIntersection(a, c, high), a, b), step));
-                        subModel.Triangles.Add(MoveTriangle(new Triangle(HelperFunctions.GetIntersection(a, c, high), HelperFunctions.GetIntersection(b, c, high), b), step));
+                        // One vertex above top
+                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(high)!.Value, a, b));
+                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(high)!.Value, new Line3D(b, c).PlaneIntersection(high)!.Value, b));
                     }
                     else
                     {
                         // Two vertices above top
-                        subModel.Triangles.Add(MoveTriangle(new Triangle(HelperFunctions.GetIntersection(a, c, high), HelperFunctions.GetIntersection(a, b, high), a), step));
+                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(high)!.Value, new Line3D(a, b).PlaneIntersection(high)!.Value, a));
                     }
                 }
             }
 
-            models.Add(subModel);
+            // TODO: Translate such that submodel has y=0 at the bottom or middle
+            subModel.Triangles = subModel.Triangles.Select(t => t.Translate(new Vector3(0, step, 0))).ToList();
+
+            if (subModel.Triangles.Count > 0)
+            {
+                subModels.Add(subModel);
+            }
         }
 
         if (print)
         {
-            HelperFunctions.PrintModels(models);
+            HelperFunctions.PrintModels(subModels);
         }
 
-        return models;
-    }
-
-    private static Triangle MoveTriangle(Triangle triangle, float step)
-    {
-        var a = triangle.A with { Y = triangle.A.Y - step };
-        var b = triangle.B with { Y = triangle.B.Y - step };
-        var c = triangle.C with { Y = triangle.C.Y - step };
-        return new Triangle(a, b, c);
+        return subModels;
     }
 }
 
 internal static class HelperFunctions
 {
-    public static Vector3 GetIntersection(Vector3 a, Vector3 b, float height)
-    {
-        var t = (height - a.Y) / (b.Y - a.Y);
-
-        return Vector3.Lerp(a, b, t);
-    }
-
     public static void PrintModels(List<Model> models)
     {
         Console.WriteLine(models.Count);

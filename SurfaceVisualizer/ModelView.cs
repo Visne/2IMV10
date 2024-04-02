@@ -54,7 +54,7 @@ public class ModelView : OpenGlControl
         var mesh = model.LogicalMeshes[0];
         var primitive = mesh.Primitives[0];
 
-        var planes = GetCuttingPlanes(primitive.GetTriangles());
+        var planes = GetCuttingPlanes(new Model(primitive.GetTriangles()));
         
         // TODO this should be moved into the planecutter class.
         Dictionary<double, int> polygonCounts = [];
@@ -168,10 +168,15 @@ public class ModelView : OpenGlControl
 
         _shaderProgram.SetVec3("lightColor", _vm.LightColor.Vector());
         _shaderProgram.SetVec3("objectColor", _vm.ObjectColor.Vector());
-        _shaderProgram.SetVec3("lightPos", new OpenTK.Mathematics.Vector3(0, 10, 5));
+        _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
 
         GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
         _vao.DrawElements();
+
+        foreach (var vao in _modelVaos)
+        {
+            vao.DrawElements();
+        }
 
         if (_vm.ShowCuttingPlanes)
         {
@@ -185,11 +190,6 @@ public class ModelView : OpenGlControl
                 GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
                 _planeVao.DrawElements();
             }
-        }
-
-        foreach (var vao in _modelVaos)
-        {
-            vao.DrawElements();
         }
     }
 
