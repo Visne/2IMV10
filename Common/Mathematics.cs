@@ -130,7 +130,7 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C, Vector3 
 
     public Triangle Rotate(int rotX, int rotY, int rotZ)
     {
-        var rotationMatrix = Matrix4x4.CreateFromYawPitchRoll(rotY, rotX, rotZ);
+        var rotationMatrix = Matrix4x4.CreateFromYawPitchRoll((float)(Math.PI / 180) * rotY, (float)(Math.PI / 180) * rotX, (float)(Math.PI / 180) * rotZ);
         return new Triangle(Vector3.Transform(A, rotationMatrix), Vector3.Transform(B, rotationMatrix), Vector3.Transform(C, rotationMatrix), Vector3.TransformNormal(Normal, rotationMatrix), WindingCorrect);
     }
 
