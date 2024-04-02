@@ -28,7 +28,7 @@ public static class ModelSplitter
             {
                 var (a, b, c) = triangle;
 
-                if (a.Y >= low & c.Y <= high)
+                if (a.Y >= low && c.Y <= high)
                 {
                     // Fully inside current split
                     subModel.Add(triangle);
@@ -38,6 +38,47 @@ public static class ModelSplitter
                     // Outside of current split
                 }
                 // Cases where the triangles intersect the line
+                else if (a.Y <= low && c.Y >= high)
+                {
+                    if (b.Y >= low && b.Y <= high)
+                    {
+                        // One vertex below bottom, one in between planes, one above high
+                        var intersectAB = new Line3D(a, b).PlaneIntersection(low)!.Value;
+                        var intersectBC = new Line3D(b, c).PlaneIntersection(high)!.Value;
+                        var intersectLowAC = new Line3D(a, c).PlaneIntersection(low)!.Value;
+                        var intersectHighAC = new Line3D(a, c).PlaneIntersection(high)!.Value;
+                        
+                        subModel.Add(new Triangle(intersectAB, b, intersectBC, triangle.Normal, triangle.WindingCorrect));
+                        subModel.Add(new Triangle(intersectAB, intersectBC, intersectHighAC, triangle.Normal, triangle.WindingCorrect));
+                        subModel.Add(new Triangle(intersectAB, intersectHighAC, intersectLowAC, triangle.Normal, triangle.WindingCorrect));
+                    }
+                    else if (b.Y <= low)
+                    {
+                        // Two vertices below bottom, one above high
+                        var intersectLowAC = new Line3D(a, c).PlaneIntersection(low)!.Value;
+                        var intersectHighAC = new Line3D(a, c).PlaneIntersection(high)!.Value;
+                        var intersectLowBC = new Line3D(b, c).PlaneIntersection(low)!.Value;
+                        var intersectHighBC = new Line3D(b, c).PlaneIntersection(high)!.Value;
+                        
+                        subModel.Add(new Triangle(intersectLowAC, intersectHighBC, intersectHighAC, triangle.Normal, triangle.WindingCorrect));
+                        subModel.Add(new Triangle(intersectLowAC, intersectLowBC, intersectHighBC, triangle.Normal, triangle.WindingCorrect));
+                    }
+                    else if (b.Y >= high)
+                    {
+                        // Two vertex below bottom, two above high
+                        var intersectLowAB = new Line3D(a, b).PlaneIntersection(low)!.Value;
+                        var intersectHighAB = new Line3D(a, b).PlaneIntersection(high)!.Value;
+                        var intersectLowAC = new Line3D(a, c).PlaneIntersection(low)!.Value;
+                        var intersectHighAC = new Line3D(a, c).PlaneIntersection(high)!.Value;
+                        
+                        subModel.Add(new Triangle(intersectLowAC, intersectHighAB, intersectHighAC, triangle.Normal, triangle.WindingCorrect));
+                        subModel.Add(new Triangle(intersectLowAC, intersectLowAB, intersectHighAB, triangle.Normal, triangle.WindingCorrect));
+                    }
+                    else
+                    {
+                        Console.WriteLine("Oops, missed an edge case");
+                    }
+                }
                 else if (a.Y < low)
                 {
                     if (b.Y > low)
@@ -73,6 +114,10 @@ public static class ModelSplitter
                         var intersectAB = new Line3D(a, b).PlaneIntersection(high)!.Value;
                         subModel.Add(new Triangle(intersectAB, intersectAC, a, triangle.Normal, triangle.WindingCorrect));
                     }
+                }
+                else
+                {
+                    Console.WriteLine("Oops, missed an edge case");
                 }
             }
 

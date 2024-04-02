@@ -1,4 +1,5 @@
-﻿using System.Numerics;
+﻿using System.Diagnostics;
+using System.Numerics;
 using System.Runtime.CompilerServices;
 using SharpGLTF.Schema2;
 
@@ -159,7 +160,8 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C, Vector3 
         if (b.Y > c.Y)
         {
             // Changes winding order
-            return new Triangle(a, c, b, -Normal, false);
+            (b, c) = (c, b);
+            return new Triangle(a, b, c, -Normal, false);
         }
 
         return new Triangle(a, b, c, Normal);
