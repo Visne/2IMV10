@@ -69,7 +69,7 @@ public class Model
     
     public List<Triangle> Triangles;
 
-    public (float bottom, float top) VerticalBounds()
+    public (float Bottom, float Top) VerticalBounds()
     {
         var vertices = Triangles.SelectMany(t => new[] { t.A.Y, t.B.Y, t.C.Y }).ToList();
 

@@ -15,9 +15,10 @@ public class MainWindowViewModel
     public int RotX { get; set; } = 0;
     public int RotY { get; set; } = 0;
     public int RotZ { get; set; } = 0;
+    public float GapSize { get; set; } = 0.2f;
     public Color LightColor { get; set; } = Colors.White;
     public Color ObjectColor { get; set; } = Color.Parse("#ccc");
     public string Model { get; set; } = Path.Combine("Resources", "Models", "boys_surface.glb");
     public bool IsWireframe { get; set; }
-    public bool ShowCuttingPlanes { get; set; }
+    public int PartRotationMode { get; set; }
 }

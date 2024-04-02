@@ -1,6 +1,5 @@
 using Avalonia;
 using Avalonia.Input;
-using Avalonia.Media;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
@@ -22,10 +21,9 @@ public class ModelView : OpenGlControl
     private double _height;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
-    private readonly List<VertexArrayObject> _modelVaos = [];
+    private readonly List<(VertexArrayObject VAO, Model Model)> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
-    private VertexArrayObject _planeVao = null!;
     private readonly List<double> _cuttingPlanes = [];
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -120,22 +118,8 @@ public class ModelView : OpenGlControl
             normalBuffer.SetData(data.Vertices.Select(v => v.Normal).ToArray(), BufferUsageHint.StaticDraw);
             vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
 
-            _modelVaos.Add(vao);
+            _modelVaos.Add((vao, m));
         });
-
-        var planeModel = ModelRoot.Load(Path.Combine("Resources", "Models", "plane.glb"));
-        var planePrimitive = planeModel.LogicalMeshes[0].Primitives[0];
-        
-        _planeVao = new VertexArrayObject();
-        _planeVao.SetIndices(planePrimitive.GetIndices());
-        
-        var planeVertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-        planeVertexBuffer.SetData(planePrimitive.VertexAccessors["POSITION"], BufferUsageHint.StaticDraw);
-        _planeVao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
-
-        var planeNormalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-        planeNormalBuffer.SetData(planePrimitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
-        _planeVao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
 
         _currentModel = path;
     }
@@ -154,15 +138,15 @@ public class ModelView : OpenGlControl
 
         _shaderProgram.Use();
 
-        var model = Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_yaw))
+        var modelTransform = Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_yaw))
             * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_pitch));
-        var view = Matrix4.CreateTranslation(0f, -(float)_height, -3f * (float)_zoom);
-        var projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f),
+        var viewTranfsform = Matrix4.CreateTranslation(0f, -(float)_height, -3f * (float)_zoom);
+        var projectionTransform = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f),
             (float)Math.Max(Bounds.Width / Bounds.Height, 0.01), 0.01f, 100.0f);
 
-        _shaderProgram.SetMatrix4("model", ref model);
-        _shaderProgram.SetMatrix4("view", ref view);
-        _shaderProgram.SetMatrix4("projection", ref projection);
+        _shaderProgram.SetMatrix4("model", ref modelTransform);
+        _shaderProgram.SetMatrix4("view", ref viewTranfsform);
+        _shaderProgram.SetMatrix4("projection", ref projectionTransform);
         
         _shaderProgram.SetFloat("ambientStrength", _vm.AmbientStrength);
         _shaderProgram.SetFloat("diffuseStrength", _vm.DiffuseStrength);
@@ -173,12 +157,22 @@ public class ModelView : OpenGlControl
 
         GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
 
+        var height = 0f;
         for (var i = 0; i < _modelVaos.Count; i++)
         {
-            var vao = _modelVaos[i];
-            var newModel = model;
-            newModel = Matrix4.CreateTranslation(0, 0.8f * i, 0) * newModel; // TODO: Configurable/correct gap
-            _shaderProgram.SetMatrix4("model", ref newModel);
+            var vao = _modelVaos[i].VAO;
+            var model = _modelVaos[i].Model;
+            var newModelTransform = modelTransform;
+
+            var translation = Matrix4.CreateTranslation(0, _vm.GapSize * i + height, 0);
+
+            newModelTransform = _vm.PartRotationMode switch
+            {
+                0 => translation * newModelTransform,
+                _ => newModelTransform * translation,
+            };
+
+            _shaderProgram.SetMatrix4("model", ref newModelTransform);
 
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
@@ -189,20 +183,9 @@ public class ModelView : OpenGlControl
             _shaderProgram.SetInt("drawingFront", 1);
             vao.DrawElements();
             GL.Disable(EnableCap.CullFace);
-        }
 
-        if (_vm.ShowCuttingPlanes)
-        {
-            foreach (var cuttingPlane in _cuttingPlanes)
-            {
-                var newModel = Matrix4.CreateTranslation(0, (float)cuttingPlane, 0) * model;
-                _shaderProgram.SetMatrix4("model", ref newModel);
-                _shaderProgram.SetVec3("lightColor", Colors.White.Vector());
-                _shaderProgram.SetVec3("objectColor", Color.Parse("#ccc").Vector());
-
-                GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-                _planeVao.DrawElements();
-            }
+            var bounds = model.VerticalBounds();
+            height += bounds.Top - bounds.Bottom;
         }
     }
 

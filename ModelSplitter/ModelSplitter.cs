@@ -2,18 +2,11 @@
 using Common;
 using Triangle = Common.Triangle;
 
-//var model = ModelRoot.Load("/Users/joris/Documents/Models/cube.glb");
-//var mesh = model.LogicalMeshes[0];
-//var primitive = mesh.Primitives[0];
-
-//List<double> splitHeights = [0f];
-
-//ModelSplitter.SplitModel(primitive.GetTriangles(), splitHeights, true);
-
 namespace ModelSplitter;
 
 public static class ModelSplitter
 {
+    // If this method doesn't return submodels from bottom to top stuff goes wrong
     public static List<Model> SplitModel(Model model, List<double> planes, bool print = false)
     {
         List<Model> subModels = [];
