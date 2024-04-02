@@ -1,7 +1,5 @@
-﻿using System.Numerics;
-using Common;
+﻿using Common;
 using JetBrains.Annotations;
-using Triangle = Common.Triangle;
 
 namespace PlaneCutter;
 

@@ -4,6 +4,7 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Common;
 using SharpGLTF.Schema2;
+using SurfaceVisualizer;
 using static PlaneCutter.PlaneCutter;
 
 namespace VisualDebugger;
@@ -96,21 +97,4 @@ public partial class MainWindow : Window
 public class MainWindowViewModel
 {
     public int Height { get; set; }
-}
-
-public static class Extensions
-{
-    public static List<Triangle> GetTriangles(this MeshPrimitive primitive)
-    {
-        var triangleIndices = primitive.GetTriangleIndices();
-        var accessor = primitive.VertexAccessors.Single(a => a.Key == "POSITION").Value;
-
-        var positions = accessor.AsVector3Array();
-
-        return triangleIndices.Select(indices =>
-        {
-            var (a, b, c) = indices;
-            return new Triangle(positions[a], positions[b], positions[c]);
-        }).ToList();
-    }
 }

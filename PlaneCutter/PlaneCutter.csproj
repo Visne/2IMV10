@@ -8,9 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="GeometRi" Version="1.4.0.5" />
       <PackageReference Include="JetBrains.Annotations" Version="2023.3.0" />
-      <PackageReference Include="OneOf" Version="3.0.263" />
     </ItemGroup>
 
     <ItemGroup>

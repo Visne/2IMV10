@@ -5,7 +5,6 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
-using VisualDebugger;
 using Common;
 using static PlaneCutter.PlaneCutter;
 using static ModelSplitter.ModelSplitter;

@@ -25,17 +25,16 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\ModelSplitter\ModelSplitter.csproj" />
+        <ProjectReference Include="..\PlaneCutter\PlaneCutter.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
         <EmbeddedResource Include="EmbeddedResources\**" />
 
         <None Update="Resources\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
-    </ItemGroup>
-
-    <ItemGroup>
-        <ProjectReference Include="..\ModelSplitter\ModelSplitter.csproj" />
-        <ProjectReference Include="..\PlaneCutter\PlaneCutter.csproj" />
-        <ProjectReference Include="..\VisualDebugger\VisualDebugger.csproj" />
     </ItemGroup>
 
 </Project>
