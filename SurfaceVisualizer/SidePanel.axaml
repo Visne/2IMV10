@@ -12,6 +12,15 @@
         <TextBlock Text="{Binding #DiffuseStrength.Value, StringFormat='Diffuse strength: {0:0.00}'}" /> 
         <Slider Name="DiffuseStrength" Value="{Binding DiffuseStrength}" Maximum="1" />
 
+		<TextBlock Text="{Binding #RotX.Value, StringFormat='Rotate around x-axis: {0:0.00}'}" />
+		<Slider Name="RotX" Value="{Binding RotX}" Maximum="360" />
+
+		<TextBlock Text="{Binding #RotY.Value, StringFormat='Rotate around y-axis: {0:0.00}'}" />
+		<Slider Name="RotY" Value="{Binding RotY}" Maximum="360" />
+
+		<TextBlock Text="{Binding #RotZ.Value, StringFormat='Rotate around z-axis: {0:0.00}'}" />
+		<Slider Name="RotZ" Value="{Binding RotZ}" Maximum="360" />
+
         <Panel>
             <TextBlock Text="Light color" VerticalAlignment="Center" />
             <!-- Custom color picker that has these values already set -->

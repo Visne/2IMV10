@@ -94,6 +94,10 @@ public class ModelView : OpenGlControl
 
         var models = SplitModel(model, _cuttingPlanes);
 
+        var rotationMatrix = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_vm.RotX)) * 
+                             Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_vm.RotY)) *
+                             Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(_vm.RotZ));
+
         _modelVaos.Clear();
         models.ForEach(m =>
         {
