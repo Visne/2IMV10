@@ -20,7 +20,6 @@ public class ModelView : OpenGlControl
     private double _pitch;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
-    private VertexArrayObject _vao = null!;
     private readonly List<VertexArrayObject> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
@@ -49,11 +48,12 @@ public class ModelView : OpenGlControl
 
     private void LoadModel(string path)
     {
-        var model = ModelRoot.Load(path);
-        var mesh = model.LogicalMeshes[0];
+        var modelRoot = ModelRoot.Load(path);
+        var mesh = modelRoot.LogicalMeshes[0];
         var primitive = mesh.Primitives[0];
+        var model = new Model(primitive);
 
-        var planes = GetCuttingPlanes(new Model(primitive.GetTriangles()));
+        var planes = GetCuttingPlanes(model);
         
         // TODO this should be moved into the planecutter class.
         Dictionary<double, int> polygonCounts = [];
@@ -92,34 +92,26 @@ public class ModelView : OpenGlControl
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
 
-        var models = SplitModel(new Model(primitive.GetTriangles()), _cuttingPlanes);
+        var models = SplitModel(model, _cuttingPlanes);
 
         _modelVaos.Clear();
         models.ForEach(m =>
         {
-            var (vertices, indices) = GetVerticesAndIndicesFromTriangles(m.Triangles);
+            var data = m.GetRenderData();
             // TODO handle the model
             var vao = new VertexArrayObject();
-            vao.SetIndices(indices);
+            vao.SetIndices(data.Indices);
 
             var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-            vertexBuffer.SetData(vertices, BufferUsageHint.StaticDraw);
+            vertexBuffer.SetData(data.Vertices.Select(v => v.Position).ToArray(), BufferUsageHint.StaticDraw);
             vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+            
+            var normalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            normalBuffer.SetData(data.Vertices.Select(v => v.Normal).ToArray(), BufferUsageHint.StaticDraw);
+            vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
 
             _modelVaos.Add(vao);
         });
-
-        _vao = new VertexArrayObject();
-        _vao.SetIndices(primitive.GetIndices());
-
-        // TODO: Display error message if NORMAL or POSITION is missing
-        var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-        vertexBuffer.SetData(primitive.VertexAccessors["POSITION"], BufferUsageHint.StaticDraw);
-        _vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
-
-        var normalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-        normalBuffer.SetData(primitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
-        _vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
 
         var planeModel = ModelRoot.Load(Path.Combine("Resources", "Models", "plane.glb"));
         var planePrimitive = planeModel.LogicalMeshes[0].Primitives[0];
@@ -170,11 +162,23 @@ public class ModelView : OpenGlControl
         _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
 
         GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
-        _vao.DrawElements();
 
-        foreach (var vao in _modelVaos)
+        for (var i = 0; i < _modelVaos.Count; i++)
         {
+            var vao = _modelVaos[i];
+            var newModel = model;
+            newModel = Matrix4.CreateTranslation(0, 0.8f * i, 0) * newModel; // TODO: Configurable/correct gap
+            _shaderProgram.SetMatrix4("model", ref newModel);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+            _shaderProgram.SetInt("drawingFront", 0);
             vao.DrawElements();
+
+            GL.CullFace(CullFaceMode.Back);
+            _shaderProgram.SetInt("drawingFront", 1);
+            vao.DrawElements();
+            GL.Disable(EnableCap.CullFace);
         }
 
         if (_vm.ShowCuttingPlanes)
@@ -220,27 +224,5 @@ public class ModelView : OpenGlControl
         // TODO: Clamp
         // TODO: Make non-linear?
         _zoom -= e.Delta.Y * ZoomSensitivity;
-    }
-
-    public static (IList<System.Numerics.Vector3> vertices, IList<uint> indices) GetVerticesAndIndicesFromTriangles(IEnumerable<Triangle> triangles)
-    {
-        List<System.Numerics.Vector3> vertices = [];
-        List<uint> indices = [];
-
-        foreach (var triangle in triangles)
-        {
-            // Add the vertices of the triangle to the vertices list
-            vertices.Add(triangle.A);
-            vertices.Add(triangle.B);
-            vertices.Add(triangle.C);
-
-            // Add the indices of the triangle to the indices list
-            // The index of a vertex is its position in the vertices list
-            indices.Add((uint)(vertices.Count - 3)); // Index of triangle.A
-            indices.Add((uint)(vertices.Count - 2)); // Index of triangle.B
-            indices.Add((uint)(vertices.Count - 1)); // Index of triangle.C
-        }
-
-        return (vertices, indices);
     }
 }

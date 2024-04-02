@@ -1,5 +1,6 @@
 ﻿using System.Numerics;
 using System.Runtime.CompilerServices;
+using SharpGLTF.Schema2;
 
 namespace Common;
 
@@ -54,9 +55,19 @@ public record MultiLine
     }
 }
 
-public class Model(List<Triangle> triangles)
+public class Model
 {
-    public List<Triangle> Triangles { get; set; } = triangles;
+    public Model()
+    {
+        Triangles = [];
+    }
+
+    public Model(MeshPrimitive primitive)
+    {
+        Triangles = primitive.GetTriangles();
+    }
+    
+    public List<Triangle> Triangles;
 
     public (float bottom, float top) VerticalBounds()
     {
@@ -64,12 +75,40 @@ public class Model(List<Triangle> triangles)
 
         return (vertices.Min(), vertices.Max());
     }
+    
+    public (List<(Vector3 Position, Vector3 Normal)> Vertices, List<uint> Indices) GetRenderData()
+    {
+        List<(Vector3, Vector3)> vertices = [];
+        List<uint> indices = [];
+
+        for (uint i = 0; i < Triangles.Count; i++)
+        {
+            var triangle = Triangles[(int)i];
+
+            if (!triangle.WindingCorrect)
+            {
+                triangle = new Triangle(triangle.A, triangle.C, triangle.B, -triangle.Normal);
+            }
+
+            // Add the vertices of the triangle to the vertices list
+            vertices.Add((triangle.A, triangle.Normal));
+            vertices.Add((triangle.B, triangle.Normal));
+            vertices.Add((triangle.C, triangle.Normal));
+
+            // Add the indices of the triangle to the indices list
+            indices.Add(i * 3); // Index of triangle.A
+            indices.Add(i * 3 + 1); // Index of triangle.B
+            indices.Add(i * 3 + 2); // Index of triangle.C
+        }
+
+        return (vertices, indices);
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public void Add(Triangle triangle) => Triangles.Add(triangle);
 }
 
-public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
+public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C, Vector3 Normal, bool WindingCorrect = true)
 {
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Line? PlaneIntersection(double height)
@@ -87,7 +126,7 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public Triangle Translate(Vector3 translation) => new(A + translation, B + translation, C + translation);
+    public Triangle Translate(Vector3 translation) => new(A + translation, B + translation, C + translation, Normal, WindingCorrect);
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable<Line3D> Disintegrate()
@@ -104,17 +143,23 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C)
     {
         var (a, b, c) = (A, B, C);
 
-        if (a.Y > c.Y)
-            (a, c) = (c, a);
+        while (a.Y > b.Y || a.Y > c.Y)
+        {
+            // Doesn't change winding order
+            (a, b, c) = (b, c, a);
+        }
 
-        if (a.Y > b.Y)
-            (a, b) = (b, a);
-
+        // A is lowest now
         if (b.Y > c.Y)
-            (b, c) = (c, b);
+        {
+            // Changes winding order
+            return new Triangle(a, c, b, -Normal, false);
+        }
 
-        return new Triangle(a, b, c);
+        return new Triangle(a, b, c, Normal);
     }
+
+    public void Deconstruct(out Vector3 a, out Vector3 b, out Vector3 c) => (a, b, c) = (A, B, C);
 }
 
 public readonly record struct Line3D(Vector3 A, Vector3 B)

@@ -9,13 +9,16 @@ uniform float diffuseStrength;
 uniform vec3 lightColor;
 uniform vec3 objectColor;
 uniform vec3 lightPos;
+uniform int drawingFront;
 
 void main()
 {
     vec3 ambient = ambientStrength * lightColor * objectColor;
 
     vec3 lightDir = normalize(lightPos - fragmentPos);
-    vec3 diffuse = diffuseStrength * max(dot(normal, lightDir), 0) * lightColor * objectColor;
+    
+    vec3 correctedNormal = drawingFront == 1 ? normal : -normal;
+    vec3 diffuse = diffuseStrength * max(dot(correctedNormal, lightDir), 0) * lightColor * objectColor;
 
     outColor = vec4(ambient + diffuse, 1);
 }

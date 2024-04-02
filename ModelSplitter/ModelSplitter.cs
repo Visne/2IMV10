@@ -24,15 +24,12 @@ public static class ModelSplitter
         planes.Add(top);
         planes.Sort();
 
-        for (var i = 1; i < planes.Count; i++)
+        for (var i = 0; i < planes.Count - 1; i++)
         {
-            var low = planes[i - 1];
-            var high = planes[i];
+            var low = planes[i];
+            var high = planes[i + 1];
 
-            var step = (float)i;
-            //var step = -1 * low + (high - low) / 2;
-
-            Model subModel = new([]);
+            Model subModel = new();
 
             foreach (var triangle in model.Triangles.Select(t => t.SortHeight()))
             {
@@ -53,13 +50,17 @@ public static class ModelSplitter
                     if (b.Y > low)
                     {
                         // One vertex below bottom
-                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(low)!.Value, b, c));
-                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(low)!.Value, new Line3D(a, b).PlaneIntersection(low)!.Value, b));
+                        var intersectAC = new Line3D(a, c).PlaneIntersection(low)!.Value;
+                        var intersectAB = new Line3D(a, b).PlaneIntersection(low)!.Value;
+                        subModel.Add(new Triangle(intersectAC, b, c, triangle.Normal, triangle.WindingCorrect));
+                        subModel.Add(new Triangle(intersectAC, intersectAB, b, triangle.Normal, triangle.WindingCorrect));
                     }
                     else
                     {
                         // Two vertices below bottom
-                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(low)!.Value, new Line3D(b, c).PlaneIntersection(low)!.Value, c));
+                        var intersectAC = new Line3D(a, c).PlaneIntersection(low)!.Value;
+                        var intersectBC = new Line3D(b, c).PlaneIntersection(low)!.Value;
+                        subModel.Add(new Triangle(intersectAC, intersectBC, c, triangle.Normal, triangle.WindingCorrect));
                     }
                 }
                 else if (c.Y > high)
@@ -67,19 +68,23 @@ public static class ModelSplitter
                     if (b.Y < high)
                     {
                         // One vertex above top
-                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(high)!.Value, a, b));
-                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(high)!.Value, new Line3D(b, c).PlaneIntersection(high)!.Value, b));
+                        var intersectAC = new Line3D(a, c).PlaneIntersection(high)!.Value;
+                        var intersectBC = new Line3D(b, c).PlaneIntersection(high)!.Value;
+                        subModel.Add(new Triangle(intersectAC, a, b, triangle.Normal, triangle.WindingCorrect));
+                        subModel.Add(new Triangle(intersectBC, intersectAC, b, triangle.Normal, triangle.WindingCorrect));
                     }
                     else
                     {
                         // Two vertices above top
-                        subModel.Add(new Triangle(new Line3D(a, c).PlaneIntersection(high)!.Value, new Line3D(a, b).PlaneIntersection(high)!.Value, a));
+                        var intersectAC = new Line3D(a, c).PlaneIntersection(high)!.Value;
+                        var intersectAB = new Line3D(a, b).PlaneIntersection(high)!.Value;
+                        subModel.Add(new Triangle(intersectAB, intersectAC, a, triangle.Normal, triangle.WindingCorrect));
                     }
                 }
             }
 
-            // TODO: Translate such that submodel has y=0 at the bottom or middle
-            subModel.Triangles = subModel.Triangles.Select(t => t.Translate(new Vector3(0, step, 0))).ToList();
+            var step = (float)planes[i];
+            subModel.Triangles = subModel.Triangles.Select(t => t.Translate(new Vector3(0, -step, 0))).ToList();
 
             if (subModel.Triangles.Count > 0)
             {

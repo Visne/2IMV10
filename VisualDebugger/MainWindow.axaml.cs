@@ -4,7 +4,6 @@ using Avalonia.Controls;
 using Avalonia.Media;
 using Common;
 using SharpGLTF.Schema2;
-using SurfaceVisualizer;
 using static PlaneCutter.PlaneCutter;
 
 namespace VisualDebugger;
@@ -25,10 +24,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        // TODO: Fix hardcoded path
         var model = ModelRoot.Load("/home/vince/Desktop/Models/boys_surface_fixed.glb");
         var mesh = model.DefaultScene.VisualChildren.Single().Mesh;
         var primitive = mesh.Primitives.Single();
-        _planes = GetCuttingPlanes(new Model(primitive.GetTriangles()));
+        _planes = GetCuttingPlanes(new Model(primitive));
 
         SidePanel.Height.ValueChanged += (_, _) => Redraw();
         Redraw();

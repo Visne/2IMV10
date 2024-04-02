@@ -40,6 +40,7 @@ public class ShaderProgram
     public void SetFloat(string uniformName, float value) => GL.Uniform1(GetUniformLocation(uniformName), value);
     public void SetVec3(string uniformName, Vector3 value) => GL.Uniform3(GetUniformLocation(uniformName), value);
     public void SetVec4(string uniformName, Vector4 value) => GL.Uniform4(GetUniformLocation(uniformName), value);
+    public void SetInt(string uniformName, int value) => GL.Uniform1(GetUniformLocation(uniformName), value);
 
     public void Use() => GL.UseProgram(_handle);
     public int GetAttribLocation(string attribName) => GL.GetAttribLocation(_handle, attribName);
