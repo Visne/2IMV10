@@ -14,10 +14,12 @@ namespace SurfaceVisualizer;
 public class ModelView : OpenGlControl
 {
     private const double MouseSensitivity = 0.3;
-    private const double ZoomSensitivity = 0.1f;
+    private const double UpDownSensitivity = 0.005;
+    private const double ZoomSensitivity = 0.1;
     private Point _lastMousePos;
     private double _yaw;
     private double _pitch;
+    private double _height;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
     private readonly List<VertexArrayObject> _modelVaos = [];
@@ -154,7 +156,7 @@ public class ModelView : OpenGlControl
 
         var model = Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_yaw))
             * Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_pitch));
-        var view = Matrix4.CreateTranslation(0f, 0f, -3f * (float)_zoom);
+        var view = Matrix4.CreateTranslation(0f, -(float)_height, -3f * (float)_zoom);
         var projection = Matrix4.CreatePerspectiveFieldOfView(MathHelper.DegreesToRadians(45.0f),
             (float)Math.Max(Bounds.Width / Bounds.Height, 0.01), 0.01f, 100.0f);
 
@@ -220,9 +222,17 @@ public class ModelView : OpenGlControl
 
         var delta = MousePosition - _lastMousePos;
         _lastMousePos = MousePosition;
+        
+        if (e.GetCurrentPoint(null).Properties.IsMiddleButtonPressed || (e.KeyModifiers & KeyModifiers.Control) != 0)
+        {
+            _height += delta.Y * UpDownSensitivity;
+        }
+        else
+        {
+            _pitch = Math.Clamp(_pitch + delta.Y * MouseSensitivity, -89.9f, 89.9f);
+        }
 
         _yaw += delta.X * MouseSensitivity;
-        _pitch = Math.Clamp(_pitch + delta.Y * MouseSensitivity, -89.9f, 89.9f);
     }
 
     protected override void OnPointerWheelChanged(PointerWheelEventArgs e)
