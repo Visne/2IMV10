@@ -5,8 +5,9 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
-using VisualDebugger;
+using Common;
 using static PlaneCutter.PlaneCutter;
+using static ModelSplitter.ModelSplitter;
 
 namespace SurfaceVisualizer;
 
@@ -20,6 +21,7 @@ public class ModelView : OpenGlControl
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
     private VertexArrayObject _vao = null!;
+    private readonly List<VertexArrayObject> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
     private VertexArrayObject _planeVao = null!;
@@ -51,8 +53,9 @@ public class ModelView : OpenGlControl
         var mesh = model.LogicalMeshes[0];
         var primitive = mesh.Primitives[0];
 
-        var planes = GetCuttingPlanes(primitive.GetTriangles());
+        var planes = GetCuttingPlanes(new Model(primitive.GetTriangles()));
         
+        // TODO this should be moved into the planecutter class.
         Dictionary<double, int> polygonCounts = [];
         foreach (var (height, segments) in planes)
         {
@@ -88,6 +91,23 @@ public class ModelView : OpenGlControl
         {
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
+
+        var models = SplitModel(new Model(primitive.GetTriangles()), _cuttingPlanes);
+
+        _modelVaos.Clear();
+        models.ForEach(m =>
+        {
+            var (vertices, indices) = GetVerticesAndIndicesFromTriangles(m.Triangles);
+            // TODO handle the model
+            var vao = new VertexArrayObject();
+            vao.SetIndices(indices);
+
+            var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            vertexBuffer.SetData(vertices, BufferUsageHint.StaticDraw);
+            vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+
+            _modelVaos.Add(vao);
+        });
 
         _vao = new VertexArrayObject();
         _vao.SetIndices(primitive.GetIndices());
@@ -152,6 +172,11 @@ public class ModelView : OpenGlControl
         GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
         _vao.DrawElements();
 
+        foreach (var vao in _modelVaos)
+        {
+            vao.DrawElements();
+        }
+
         if (_vm.ShowCuttingPlanes)
         {
             foreach (var cuttingPlane in _cuttingPlanes)
@@ -195,5 +220,27 @@ public class ModelView : OpenGlControl
         // TODO: Clamp
         // TODO: Make non-linear?
         _zoom -= e.Delta.Y * ZoomSensitivity;
+    }
+
+    public static (IList<System.Numerics.Vector3> vertices, IList<uint> indices) GetVerticesAndIndicesFromTriangles(IEnumerable<Triangle> triangles)
+    {
+        List<System.Numerics.Vector3> vertices = [];
+        List<uint> indices = [];
+
+        foreach (var triangle in triangles)
+        {
+            // Add the vertices of the triangle to the vertices list
+            vertices.Add(triangle.A);
+            vertices.Add(triangle.B);
+            vertices.Add(triangle.C);
+
+            // Add the indices of the triangle to the indices list
+            // The index of a vertex is its position in the vertices list
+            indices.Add((uint)(vertices.Count - 3)); // Index of triangle.A
+            indices.Add((uint)(vertices.Count - 2)); // Index of triangle.B
+            indices.Add((uint)(vertices.Count - 1)); // Index of triangle.C
+        }
+
+        return (vertices, indices);
     }
 }

@@ -14,7 +14,7 @@ public class MainWindowViewModel
     public float DiffuseStrength { get; set; } = 0.5f;
     public Color LightColor { get; set; } = Colors.White;
     public Color ObjectColor { get; set; } = Color.Parse("#ccc");
-    public string Model { get; set; } = Path.Combine("Resources", "Models", "monkey_smooth.gltf");
+    public string Model { get; set; } = Path.Combine("Resources", "Models", "boys_surface.glb");
     public bool IsWireframe { get; set; }
     public bool ShowCuttingPlanes { get; set; }
 }

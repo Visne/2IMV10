@@ -15,11 +15,11 @@
         <PackageReference Include="Avalonia.Desktop" Version="11.0.10"/>
         <PackageReference Include="Avalonia.Diagnostics" Version="11.0.10"/>
         <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-        <PackageReference Include="SharpGLTF.Core" Version="1.0.0-alpha0031" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\PlaneCutter\PlaneCutter.csproj" />
+      <ProjectReference Include="..\SurfaceVisualizer\SurfaceVisualizer.csproj" />
     </ItemGroup>
 
 </Project>
