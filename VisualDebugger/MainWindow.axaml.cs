@@ -24,10 +24,11 @@ public partial class MainWindow : Window
     {
         InitializeComponent();
 
+        // TODO: Fix hardcoded path
         var model = ModelRoot.Load("/home/vince/Desktop/Models/boys_surface_fixed.glb");
         var mesh = model.DefaultScene.VisualChildren.Single().Mesh;
         var primitive = mesh.Primitives.Single();
-        _planes = GetCuttingPlanes(primitive.GetTriangles());
+        _planes = GetCuttingPlanes(new Model(primitive));
 
         SidePanel.Height.ValueChanged += (_, _) => Redraw();
         Redraw();
@@ -96,21 +97,4 @@ public partial class MainWindow : Window
 public class MainWindowViewModel
 {
     public int Height { get; set; }
-}
-
-public static class Extensions
-{
-    public static IList<Triangle> GetTriangles(this MeshPrimitive primitive)
-    {
-        var triangleIndices = primitive.GetTriangleIndices();
-        var accessor = primitive.VertexAccessors.Single(a => a.Key == "POSITION").Value;
-
-        var positions = accessor.AsVector3Array();
-
-        return triangleIndices.Select(indices =>
-        {
-            var (a, b, c) = indices;
-            return new Triangle(positions[a], positions[b], positions[c]);
-        }).ToList();
-    }
 }

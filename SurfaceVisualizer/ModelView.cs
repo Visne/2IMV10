@@ -5,8 +5,9 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using SharpGLTF.Schema2;
 using SurfaceVisualizer.Shaders;
-using VisualDebugger;
+using Common;
 using static PlaneCutter.PlaneCutter;
+using static ModelSplitter.ModelSplitter;
 
 namespace SurfaceVisualizer;
 
@@ -19,7 +20,7 @@ public class ModelView : OpenGlControl
     private double _pitch;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
-    private VertexArrayObject _vao = null!;
+    private readonly List<VertexArrayObject> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
     private VertexArrayObject _planeVao = null!;
@@ -47,12 +48,14 @@ public class ModelView : OpenGlControl
 
     private void LoadModel(string path)
     {
-        var model = ModelRoot.Load(path);
-        var mesh = model.LogicalMeshes[0];
+        var modelRoot = ModelRoot.Load(path);
+        var mesh = modelRoot.LogicalMeshes[0];
         var primitive = mesh.Primitives[0];
+        var model = new Model(primitive);
 
-        var planes = GetCuttingPlanes(primitive.GetTriangles());
+        var planes = GetCuttingPlanes(model);
         
+        // TODO this should be moved into the planecutter class.
         Dictionary<double, int> polygonCounts = [];
         foreach (var (height, segments) in planes)
         {
@@ -89,17 +92,26 @@ public class ModelView : OpenGlControl
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
 
-        _vao = new VertexArrayObject();
-        _vao.SetIndices(primitive.GetIndices());
+        var models = SplitModel(model, _cuttingPlanes);
 
-        // TODO: Display error message if NORMAL or POSITION is missing
-        var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-        vertexBuffer.SetData(primitive.VertexAccessors["POSITION"], BufferUsageHint.StaticDraw);
-        _vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+        _modelVaos.Clear();
+        models.ForEach(m =>
+        {
+            var data = m.GetRenderData();
+            // TODO handle the model
+            var vao = new VertexArrayObject();
+            vao.SetIndices(data.Indices);
 
-        var normalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
-        normalBuffer.SetData(primitive.VertexAccessors["NORMAL"], BufferUsageHint.StaticDraw);
-        _vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
+            var vertexBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            vertexBuffer.SetData(data.Vertices.Select(v => v.Position).ToArray(), BufferUsageHint.StaticDraw);
+            vao.SetAttributePointer<float>(_shaderProgram, "position", 3, 3, 0);
+            
+            var normalBuffer = new BufferObject(BufferTarget.ArrayBuffer);
+            normalBuffer.SetData(data.Vertices.Select(v => v.Normal).ToArray(), BufferUsageHint.StaticDraw);
+            vao.SetAttributePointer<float>(_shaderProgram, "normal", 3, 3, 0);
+
+            _modelVaos.Add(vao);
+        });
 
         var planeModel = ModelRoot.Load(Path.Combine("Resources", "Models", "plane.glb"));
         var planePrimitive = planeModel.LogicalMeshes[0].Primitives[0];
@@ -150,7 +162,24 @@ public class ModelView : OpenGlControl
         _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
 
         GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
-        _vao.DrawElements();
+
+        for (var i = 0; i < _modelVaos.Count; i++)
+        {
+            var vao = _modelVaos[i];
+            var newModel = model;
+            newModel = Matrix4.CreateTranslation(0, 0.8f * i, 0) * newModel; // TODO: Configurable/correct gap
+            _shaderProgram.SetMatrix4("model", ref newModel);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Front);
+            _shaderProgram.SetInt("drawingFront", 0);
+            vao.DrawElements();
+
+            GL.CullFace(CullFaceMode.Back);
+            _shaderProgram.SetInt("drawingFront", 1);
+            vao.DrawElements();
+            GL.Disable(EnableCap.CullFace);
+        }
 
         if (_vm.ShowCuttingPlanes)
         {
