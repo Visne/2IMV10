@@ -53,6 +53,14 @@ public class ModelView : OpenGlControl
         var primitive = mesh.Primitives[0];
         var model = new Model(primitive);
 
+        var updatedTriangles = new List<Triangle>();
+        foreach (var triangle in model.Triangles)
+        {
+            var updatedTriangle = triangle.Rotate(_vm.RotX, _vm.RotY, _vm.RotZ);
+            updatedTriangles.Add(updatedTriangle);
+        }
+        model.Triangles = updatedTriangles;
+
         var planes = GetCuttingPlanes(model);
         
         // TODO this should be moved into the planecutter class.
@@ -93,10 +101,6 @@ public class ModelView : OpenGlControl
         }
 
         var models = SplitModel(model, _cuttingPlanes);
-
-        var rotationMatrix = Matrix4.CreateRotationX((float)MathHelper.DegreesToRadians(_vm.RotX)) * 
-                             Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_vm.RotY)) *
-                             Matrix4.CreateRotationZ((float)MathHelper.DegreesToRadians(_vm.RotZ));
 
         _modelVaos.Clear();
         models.ForEach(m =>

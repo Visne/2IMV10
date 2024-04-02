@@ -128,6 +128,12 @@ public readonly record struct Triangle(Vector3 A, Vector3 B, Vector3 C, Vector3 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public Triangle Translate(Vector3 translation) => new(A + translation, B + translation, C + translation, Normal, WindingCorrect);
 
+    public Triangle Rotate(int rotX, int rotY, int rotZ)
+    {
+        var rotationMatrix = Matrix4x4.CreateFromYawPitchRoll(rotY, rotX, rotZ);
+        return new Triangle(Vector3.Transform(A, rotationMatrix), Vector3.Transform(B, rotationMatrix), Vector3.Transform(C, rotationMatrix), Vector3.TransformNormal(Normal, rotationMatrix), WindingCorrect);
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public IEnumerable<Line3D> Disintegrate()
     {
