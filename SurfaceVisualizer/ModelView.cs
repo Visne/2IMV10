@@ -81,12 +81,14 @@ public class ModelView : OpenGlControl
         Dictionary<double, (int, int)> PolygonAspectCount = [];
         foreach (var (height, segments) in planes)
         {
+            var segments2 = segments;
+            var intersections = GetIntersections(segments2);
             var polygons = ToPolygons(segments);
-            var intersections = GetIntersections(segments);
+            
 
             //replace the ui selection criteria here
             var polyCount = true ? polygons.Count : 0;
-            var intersectionCount = false ? intersections.Count : 0;
+            var intersectionCount = true ? intersections.Count : 0;
             //Maybe we can add other aspects than the distinct objecss here, like intersectoins.
             PolygonAspectCount.Add(height, (polyCount, intersectionCount));
         }
