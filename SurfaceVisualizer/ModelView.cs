@@ -7,6 +7,7 @@ using SurfaceVisualizer.Shaders;
 using Common;
 using static PlaneCutter.PlaneCutter;
 using static ModelSplitter.ModelSplitter;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace SurfaceVisualizer;
 
@@ -77,33 +78,39 @@ public class ModelView : OpenGlControl
         var planes = GetCuttingPlanes(model);
         
         // TODO this should be moved into the planecutter class.
-        Dictionary<double, int> polygonCounts = [];
+        Dictionary<double, (int, int)> PolygonAspectCount = [];
         foreach (var (height, segments) in planes)
         {
             var polygons = ToPolygons(segments);
-            polygonCounts.Add(height, polygons.Count);
+            var intersections = GetIntersections(segments);
+
+            //replace the ui selection criteria here
+            var polyCount = true ? polygons.Count : 0;
+            var intersectionCount = false ? intersections.Count : 0;
+            //Maybe we can add other aspects than the distinct objecss here, like intersectoins.
+            PolygonAspectCount.Add(height, (polyCount, intersectionCount));
         }
         
-        polygonCounts.Add(polygonCounts.Keys.Min() - 0.001, 0);
-        //polygonCounts.Add(polygonCounts.Keys.Max() + 0.001, 0);
+        PolygonAspectCount.Add(PolygonAspectCount.Keys.Min() - 0.001, (0,0));
+        //PolygonAspectCount.Add(PolygonAspectCount.Keys.Max() + 0.001, (0,0));
 
-        var heights = polygonCounts.Keys.ToList();
+        var heights = PolygonAspectCount.Keys.ToList();
         heights.Sort();
         heights.Reverse();
 
         List<double> changePoints = [];
-        double? prev = null;
+        (int?, int?) prev = (null, null);
         foreach (var height in heights)
         {
-            if (prev == null)
+            if (prev == (null, null))
             {
                 changePoints.Add(height);
-                prev = polygonCounts[height];
+                prev = PolygonAspectCount[height];
             }
-            else if (prev != polygonCounts[height])
+            else if (prev != PolygonAspectCount[height])
             {
                 changePoints.Add(height);
-                prev = polygonCounts[height];
+                prev = PolygonAspectCount[height];
             }
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using SharpGLTF.Schema2;
@@ -15,6 +16,8 @@ public static class Mathematics
         var distance = Math.Sqrt(Math.Pow(me.X - other.X, 2) + Math.Pow(me.Y - other.Y, 2));
         return distance <= Tolerance;
     }
+
+
 }
 
 public record MultiLine
@@ -55,6 +58,8 @@ public record MultiLine
         return true;
     }
 }
+
+
 
 public class Model
 {
@@ -191,4 +196,35 @@ public readonly record struct Line(Vector2 A, Vector2 B)
     {
         return new Line(A + translation, B + translation);
     }
+
+    public Boolean Intersects(Line L, out Vector2 intersection)
+    {
+        double x1 = A.X, y1 = A.Y;
+        double x2 = B.X, y2 = B.Y;
+        double x3 = L.A.X, y3 = L.A.Y;
+        double x4 = L.B.X, y4 = L.B.Y;
+
+        double denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+
+        if (denominator == 0)
+        { // Lines are parallel
+            intersection = new Vector2(0,0);
+            return false;
+        }
+
+        double intersectX = ((x1 * y2 - y1 * x2) * (x3 - x4) - (x1 - x2) * (x3 * y4 - y3 * x4)) / denominator;
+        double intersectY = ((x1 * y2 - y1 * x2) * (y3 - y4) - (y1 - y2) * (x3 * y4 - y3 * x4)) / denominator;
+
+        intersection = new Vector2((float)intersectX, (float)intersectY);
+
+        // Check if the point of intersection lies within the segments
+        bool isOnLine1 = intersectX >= Math.Min(x1, x2) && intersectX <= Math.Max(x1, x2)
+                         && intersectY >= Math.Min(y1, y2) && intersectY <= Math.Max(y1, y2);
+
+        bool isOnLine2 = intersectX >= Math.Min(x3, x4) && intersectX <= Math.Max(x3, x4)
+                         && intersectY >= Math.Min(y3, y4) && intersectY <= Math.Max(y3, y4);
+
+        return isOnLine1 && isOnLine2;
+    }
+
 }

@@ -25,7 +25,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         // TODO: Fix hardcoded path
-        var model = ModelRoot.Load("/home/vince/Desktop/Models/boys_surface_fixed.glb");
+        var model = ModelRoot.Load(Path.Combine("Resources", "Models", "boys_surface.glb"));
         var mesh = model.DefaultScene.VisualChildren.Single().Mesh;
         var primitive = mesh.Primitives.Single();
         _planes = GetCuttingPlanes(new Model(primitive));
@@ -45,10 +45,17 @@ public partial class MainWindow : Window
             return;
 
         var segments = poly.Select(s => s.Translate(new Vector2(0.8f, 0.8f))).Distinct().ToList();
+        var segments2 = poly.Select(s => s.Translate(new Vector2(0.8f, 0.8f))).Distinct().ToList();
+        
 
         var polygons = ToPolygons(segments);
+        var intersections = GetIntersections(segments2);
+
+        Console.WriteLine("polygons: " + polygons.Count.ToString());
+        Console.WriteLine("intersections: " + intersections.Count.ToString());
 
         List<Avalonia.Controls.Shapes.Line> lines = [];
+        List<Avalonia.Controls.Shapes.Line> intersects = [];
         foreach (var polygon in polygons)
         {
             var bytes = new byte[3];
@@ -87,7 +94,25 @@ public partial class MainWindow : Window
         //     Stroke = Brushes.White,
         // }).ToList();
 
+        foreach (var intersect in intersections)
+        {
+            var bytes = new byte[3];
+            _rand.NextBytes(bytes);
+            var randomColor = new Color(255, bytes[0], bytes[1], bytes[2]);
+
+            intersects.Add(new Avalonia.Controls.Shapes.Line
+            {
+                StartPoint = new Point(intersect.X * 500, intersect.Y * 500),
+                EndPoint = new Point(intersect.X * 500 + 50, intersect.Y * 500),
+                Stroke = new SolidColorBrush(randomColor)
+            });
+        }
+
         foreach (var line in lines)
+        {
+            Canvas.Children.Add(line);
+        }
+        foreach (var line in intersects)
         {
             Canvas.Children.Add(line);
         }
