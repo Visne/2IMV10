@@ -76,7 +76,7 @@ public static class PlaneCutter
         List<Vector2> intersections = new List<Vector2>();
 
 
-        
+        /*
         // Flatten the lines into events (start and end points)
         List<Vector2> events = lines.SelectMany(line => new[] { line.A, line.B }).Distinct().ToList();
 
@@ -113,7 +113,7 @@ public static class PlaneCutter
                             neighbours++;
                             currentNeighbour = true;
                         }
-                        if (!currentNeighbour )//|| (currentNeighbour && neighbours > 2))
+                        if (!currentNeighbour || (currentNeighbour && neighbours > 2))
                         {
                             //such that the current intersection is not a neighboor. Or it is a neighbour > 2 thus splitting point
                             intersections.Add(intersectionPoint);
@@ -123,20 +123,38 @@ public static class PlaneCutter
                 }
             }
         }
-        
+        */
 
-        /*
-        for (int i = 0; i < lines.Count; i++)
+        
+        for (int i = 0; i < lines.Count -1; i++)
         {
-            for (int j = i; j < lines.Count; j++)
+            for (int j = i+1; j < lines.Count; j++)
             {
+                int neighbours = 0;                   
                 if (lines[i].Intersects(lines[j], out Vector2 intersectionPoint))
                 {
-                    intersections.Add(intersectionPoint);
+                    bool currentNeighbour = false;
+                    if (lines[i].A.CloseTo(lines[j].A)
+                        || lines[i].A.CloseTo(lines[j].B)
+                        || lines[i].B.CloseTo(lines[j].A)
+                        || lines[i].B.CloseTo(lines[j].B)
+                        )
+                    {
+                    //two folowing lines
+                    neighbours++;
+                        currentNeighbour = true;
+                    }
+                    if (!currentNeighbour || (currentNeighbour && neighbours > 2))
+                    {
+                        //such that the current intersection is not a neighboor. Or it is a neighbour > 2 thus splitting point
+                        intersections.Add(intersectionPoint);
+                    }
+
                 }
+
             }
         }
-        */
+        
 
         return intersections;
     }
