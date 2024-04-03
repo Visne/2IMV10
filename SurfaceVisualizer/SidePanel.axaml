@@ -28,6 +28,13 @@
 	        <ComboBoxItem>Rotate whole object</ComboBoxItem>
 	        <ComboBoxItem>Rotate parts in place</ComboBoxItem>
         </ComboBox>
+        
+        <TextBlock Text="Shading:" />
+        <ComboBox SelectedIndex="{Binding Shader}">
+	        <ComboBoxItem>Wireframe</ComboBoxItem>
+	        <ComboBoxItem>Simple shading</ComboBoxItem>
+	        <ComboBoxItem>Hand-drawn</ComboBoxItem>
+        </ComboBox>
 
         <Panel>
             <TextBlock Text="Light color" VerticalAlignment="Center" />
@@ -49,7 +56,5 @@
                          IsAlphaEnabled="False"
                          ColorModel="Hsva" />
         </Panel>
-
-        <CheckBox Content="Show wireframe" IsChecked="{Binding IsWireframe}"/>
-    </StackPanel>
+	</StackPanel>
 </UserControl>

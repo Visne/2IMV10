@@ -21,8 +21,4 @@ void main()
     vec3 diffuse = diffuseStrength * max(dot(correctedNormal, lightDir), 0) * lightColor * objectColor;
 
     outColor = vec4(ambient + diffuse, 1);
-    
-    if (mod(fragmentPos.y, 0.015) < 0.002) {
-        outColor *= 0.8;
-    }
 }

@@ -21,6 +21,8 @@ public class ModelView : OpenGlControl
     private double _height;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
+    private ShaderProgram _basic = null!;
+    private ShaderProgram _handDrawn = null!;
     private readonly List<(VertexArrayObject VAO, Model Model)> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
     private string _currentModel = null!;
@@ -40,9 +42,20 @@ public class ModelView : OpenGlControl
         GL.ClearColor(0.1f, 0.1f, 0.1f, 1f);
 
         var vertexSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.EmbeddedResources.Shaders.vertex.glsl");
-        var fragmentSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.EmbeddedResources.Shaders.fragment.glsl");
-        _shaderProgram = new ShaderProgram(vertexSource, fragmentSource);
+        var fragmentSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.EmbeddedResources.Shaders.fragment_phong.glsl");
+        _basic = new ShaderProgram(vertexSource, fragmentSource);
+        
+        fragmentSource = Utilities.GetEmbeddedResource("SurfaceVisualizer.EmbeddedResources.Shaders.fragment.glsl");
+        _handDrawn = new ShaderProgram(vertexSource, fragmentSource);
 
+        _shaderProgram = _vm.Shader switch
+        {
+            0 => _basic,
+            1 => _basic,
+            2 => _handDrawn,
+            _ => throw new NotImplementedException(),
+        };
+        
         LoadModel(_vm.Model);
     }
 
@@ -136,6 +149,16 @@ public class ModelView : OpenGlControl
 
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
+        (_shaderProgram, var polygonMode) = _vm.Shader switch
+        {
+            0 => (_basic, PolygonMode.Line),
+            1 => (_basic, PolygonMode.Fill),
+            2 => (_handDrawn, PolygonMode.Fill),
+            _ => throw new NotImplementedException(),
+        };
+
+        GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
+
         _shaderProgram.Use();
 
         var modelTransform = Matrix4.CreateRotationY((float)MathHelper.DegreesToRadians(_yaw))
@@ -155,8 +178,6 @@ public class ModelView : OpenGlControl
         _shaderProgram.SetVec3("objectColor", _vm.ObjectColor.Vector());
         _shaderProgram.SetVec3("lightPos", new Vector3(0, 10, 5));
 
-        GL.PolygonMode(MaterialFace.FrontAndBack, _vm.IsWireframe ? PolygonMode.Line : PolygonMode.Fill);
-
         var height = 0f;
         for (var i = 0; i < _modelVaos.Count; i++)
         {
@@ -169,7 +190,8 @@ public class ModelView : OpenGlControl
             newModelTransform = _vm.PartRotationMode switch
             {
                 0 => translation * newModelTransform,
-                _ => newModelTransform * translation,
+                1 => newModelTransform * translation,
+                _ => throw new NotImplementedException(),
             };
 
             _shaderProgram.SetMatrix4("model", ref newModelTransform);
