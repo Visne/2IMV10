@@ -45,5 +45,11 @@ public partial class SidePanel : UserControl
         
         // TODO: Validate the model and display an error if invalid
         _vm.Model = file.Path.AbsolutePath;
+        _vm.ModelChanged = true;
+    }
+
+    private void ReloadButtonClicked(object? _1, RoutedEventArgs _2)
+    {
+        _vm.ModelChanged = true;
     }
 }

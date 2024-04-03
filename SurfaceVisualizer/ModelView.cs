@@ -142,9 +142,10 @@ public class ModelView : OpenGlControl
         base.Render(deltaTime);
 
         // TODO: Refactor this
-        if (_vm.Model != _currentModel)
+        if (_vm.ModelChanged)
         {
             LoadModel(_vm.Model);
+            _vm.ModelChanged = false;
         }
 
         GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

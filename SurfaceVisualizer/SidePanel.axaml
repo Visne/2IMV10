@@ -5,6 +5,7 @@
              x:DataType="surfaceVisualizer:MainWindowViewModel">
     <StackPanel Margin="20" >
         <Button Click="OpenFileButtonClicked">Open file</Button>
+	    <Button Click="ReloadButtonClicked">Reload</Button>
 
         <TextBlock Text="{Binding #AmbientStrength.Value, StringFormat='Ambient strength: {0:0.00}'}" /> 
         <Slider Name="AmbientStrength" Value="{Binding AmbientStrength}" Maximum="1" />

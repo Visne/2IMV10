@@ -19,6 +19,7 @@ public class MainWindowViewModel
     public Color LightColor { get; set; } = Colors.White;
     public Color ObjectColor { get; set; } = Color.Parse("#ccc");
     public string Model { get; set; } = Path.Combine("Resources", "Models", "boys_surface.glb");
+    public bool ModelChanged { get; set; }
     public int PartRotationMode { get; set; }
     public int Shader { get; set; } = 1;
 }
