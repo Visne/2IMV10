@@ -87,8 +87,8 @@ public class ModelView : OpenGlControl
             
 
             //replace the ui selection criteria here
-            var polyCount = true ? polygons.Count : 0;
-            var intersectionCount = true ? intersections.Count : 0;
+            var polyCount = _vm.UsePolygons ? polygons.Count : 0;
+            var intersectionCount = _vm.UseIntersections ? intersections.Count : 0;
             //Maybe we can add other aspects than the distinct objecss here, like intersectoins.
             PolygonAspectCount.Add(height, (polyCount, intersectionCount));
         }

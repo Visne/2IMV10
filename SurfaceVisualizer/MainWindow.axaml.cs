@@ -22,4 +22,6 @@ public class MainWindowViewModel
     public bool ModelChanged { get; set; }
     public int PartRotationMode { get; set; }
     public int Shader { get; set; } = 1;
+    public bool UsePolygons {  get; set; } = true;
+    public bool UseIntersections { get; set; } = true;
 }
