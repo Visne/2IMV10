@@ -187,6 +187,7 @@ public readonly record struct Line3D(Vector3 A, Vector3 B)
 
         return Vector3.Lerp(A, B, (float)lerp);
     }
+    
 }
 
 public readonly record struct Line(Vector2 A, Vector2 B)

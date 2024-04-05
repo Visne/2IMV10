@@ -3,64 +3,112 @@
              xmlns:surfaceVisualizer="clr-namespace:SurfaceVisualizer"
              x:Class="SurfaceVisualizer.SidePanel"
              x:DataType="surfaceVisualizer:MainWindowViewModel">
-    <StackPanel Margin="20" >
-        <Button Click="OpenFileButtonClicked">Open file</Button>
-	    <Button Click="ReloadButtonClicked">Reload</Button>
+	<ScrollViewer>
+		<StackPanel Margin="20" >
 
-        <TextBlock Text="{Binding #AmbientStrength.Value, StringFormat='Ambient strength: {0:0.00}'}" /> 
-        <Slider Name="AmbientStrength" Value="{Binding AmbientStrength}" Maximum="1" />
 
-        <TextBlock Text="{Binding #DiffuseStrength.Value, StringFormat='Diffuse strength: {0:0.00}'}" /> 
-        <Slider Name="DiffuseStrength" Value="{Binding DiffuseStrength}" Maximum="1" />
+			<Button Click="OpenFileButtonClicked">Open file</Button>
 
-		<TextBlock Text="{Binding #RotX.Value, StringFormat='Rotation around x-axis: {0:0}°'}" />
-		<Slider Name="RotX" Value="{Binding RotX}" Maximum="360" />
 
-		<TextBlock Text="{Binding #RotY.Value, StringFormat='Rotation around y-axis: {0:0}°'}" />
-		<Slider Name="RotY" Value="{Binding RotY}" Maximum="360" />
 
-		<TextBlock Text="{Binding #RotZ.Value, StringFormat='Rotation around z-axis: {0:0}°'}" />
-		<Slider Name="RotZ" Value="{Binding RotZ}" Maximum="360" />
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
+				<Expander.Header>
+					Rendering options
+				</Expander.Header>
 
-		<TextBlock Text="Use in cutting planes:" />
-		<CheckBox Name ="UsePolygons" IsChecked="{Binding UsePolygons}" >Polygons</CheckBox>
-		<CheckBox Name ="UseIntersections" IsChecked="{Binding UseIntersections}"  >Intersections</CheckBox>
-		
+				<StackPanel>
 
-        <TextBlock Text="{Binding #GapSize.Value, StringFormat='Gap size: {0:0.00}'}" />
-        <Slider Name="GapSize" Value="{Binding GapSize}" Maximum="3" TickFrequency="0.1" />
+					<TextBlock Text="{Binding #AmbientStrength.Value, StringFormat='Ambient strength: {0:0.00}'}" />
+					<Slider Name="AmbientStrength" Value="{Binding AmbientStrength}" Maximum="1" />
 
-        <ComboBox SelectedIndex="{Binding PartRotationMode}">
-	        <ComboBoxItem>Rotate whole object</ComboBoxItem>
-	        <ComboBoxItem>Rotate parts in place</ComboBoxItem>
-        </ComboBox>
-        
-        <TextBlock Text="Shading:" />
-        <ComboBox SelectedIndex="{Binding Shader}">
-	        <ComboBoxItem>Wireframe</ComboBoxItem>
-	        <ComboBoxItem>Simple shading</ComboBoxItem>
-	        <ComboBoxItem>Hand-drawn</ComboBoxItem>
-        </ComboBox>
+					<TextBlock Text="{Binding #DiffuseStrength.Value, StringFormat='Diffuse strength: {0:0.00}'}" />
+					<Slider Name="DiffuseStrength" Value="{Binding DiffuseStrength}" Maximum="1" />
 
-        <Panel>
-            <TextBlock Text="Light color" VerticalAlignment="Center" />
-            <!-- Custom color picker that has these values already set -->
-            <ColorPicker Color="{Binding LightColor}"
-                         IsColorPaletteVisible="False"
-                         IsColorPreviewVisible="False"
-                         IsAlphaVisible="False"
-                         IsAlphaEnabled="False"
-                         ColorModel="Hsva" />
-        </Panel>
+					<Panel>
+						<TextBlock Text="Light color" VerticalAlignment="Center" />
+						<!-- Custom color picker that has these values already set -->
+						<ColorPicker Color="{Binding LightColor}"
+									 IsColorPaletteVisible="False"
+									 IsColorPreviewVisible="False"
+									 IsAlphaVisible="False"
+									 IsAlphaEnabled="False"
+									 ColorModel="Hsva" />
+					</Panel>
 
-        <Panel>
-            <TextBlock Text="Object color" VerticalAlignment="Center" />
-            <ColorPicker Color="{Binding ObjectColor}"
-                         IsColorPaletteVisible="False"
-                         IsColorPreviewVisible="False"
-                         IsAlphaVisible="False"
-                         IsAlphaEnabled="False"
-                         ColorModel="Hsva" />
-        </Panel>
-	</StackPanel>
+					<Panel>
+						<TextBlock Text="Object color" VerticalAlignment="Center" />
+						<ColorPicker Color="{Binding ObjectColor}"
+									 IsColorPaletteVisible="False"
+									 IsColorPreviewVisible="False"
+									 IsAlphaVisible="False"
+									 IsAlphaEnabled="False"
+									 ColorModel="Hsva" />
+					</Panel>
+
+					<TextBlock Text="Shading:" />
+					<ComboBox SelectedIndex="{Binding Shader}">
+						<ComboBoxItem>Wireframe</ComboBoxItem>
+						<ComboBoxItem>Simple shading</ComboBoxItem>
+						<ComboBoxItem>Hand-drawn</ComboBoxItem>
+					</ComboBox>
+
+				</StackPanel>
+			</Expander>
+
+
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
+				<Expander.Header>
+					Exposion axis
+				</Expander.Header>
+				<StackPanel>
+
+					<TextBlock Text="{Binding #RotX.Value, StringFormat='Rotation around x-axis: {0:0}°'}" />
+					<Slider Name="RotX" Value="{Binding RotX}" Maximum="360" />
+
+					<TextBlock Text="{Binding #RotY.Value, StringFormat='Rotation around y-axis: {0:0}°'}" />
+					<Slider Name="RotY" Value="{Binding RotY}" Maximum="360" />
+
+					<TextBlock Text="{Binding #RotZ.Value, StringFormat='Rotation around z-axis: {0:0}°'}" />
+					<Slider Name="RotZ" Value="{Binding RotZ}" Maximum="360" />
+				
+				
+					<Button Click="ReloadButtonClicked">Reload</Button>
+				</StackPanel>
+
+			</Expander>
+
+
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
+				<Expander.Header>
+					Cutting planes
+				</Expander.Header>
+
+				<StackPanel>
+					<TextBlock Text="Use in cutting planes:" />
+					<CheckBox Name ="UsePolygons" IsChecked="{Binding UsePolygons}" >Polygons</CheckBox>
+					<CheckBox Name ="UseIntersections" IsChecked="{Binding UseIntersections}"  >Intersections</CheckBox>
+				
+					<Button Click="ReloadButtonClicked">Reload</Button>
+				</StackPanel>
+			</Expander>
+
+
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
+				<Expander.Header>
+					Model interactoin
+				</Expander.Header>
+				<StackPanel>
+
+					<TextBlock Text="{Binding #GapSize.Value, StringFormat='Gap size: {0:0.00}'}" />
+					<Slider Name="GapSize" Value="{Binding GapSize}" Maximum="3" TickFrequency="0.1" />
+
+					<ComboBox SelectedIndex="{Binding PartRotationMode}">
+						<ComboBoxItem>Rotate whole object</ComboBoxItem>
+						<ComboBoxItem>Rotate parts in place</ComboBoxItem>
+					</ComboBox>
+				</StackPanel>
+
+			</Expander>
+		</StackPanel>
+	</ScrollViewer>
 </UserControl>
