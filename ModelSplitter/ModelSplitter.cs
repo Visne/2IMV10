@@ -42,6 +42,7 @@ public static class ModelSplitter
                     // Cases where the triangles intersect the line
                     else if (a.Y < low && c.Y > high)
                     {
+                        //Case where it stretches both planes
                         if (b.Y > low && b.Y < high)
                         {
                             // One vertex below bottom, one in between planes, one above high

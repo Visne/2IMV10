@@ -6,10 +6,23 @@
 	<ScrollViewer>
 		<StackPanel Margin="20" >
 
+			
 
-			<Button Click="OpenFileButtonClicked">Open file</Button>
+			<TextBlock Text="Model:" />
+			<WrapPanel >
+				<StackPanel Margin="0,0,25,0">
+					<ComboBox SelectedIndex="{Binding ModelIndex}">
+						<ComboBoxItem>Boys surface</ComboBoxItem>
+						<ComboBoxItem>Kleine bottle</ComboBoxItem>
+						<ComboBoxItem>Roman surface</ComboBoxItem>
+						<ComboBoxItem>Triaxial hexatorus</ComboBoxItem>
+						<ComboBoxItem>Monkey face</ComboBoxItem>
+					</ComboBox>
+					<Button x:Name="DefaultModelSelector" Click="UseDefaultModels" >Use model</Button>
+				</StackPanel>
 
-
+				<Button  x:Name="fileSelectButton" Click="OpenFileButtonClicked" >Chose custom upload</Button>
+			</WrapPanel>
 
 			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
 				<Expander.Header>

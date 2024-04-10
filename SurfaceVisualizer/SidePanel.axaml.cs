@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Avalonia.Platform.Storage;
+using System.Linq.Expressions;
 
 namespace SurfaceVisualizer;
 
@@ -45,6 +46,31 @@ public partial class SidePanel : UserControl
         
         // TODO: Validate the model and display an error if invalid
         _vm.Model = file.Path.AbsolutePath;
+        _vm.ModelChanged = true;
+    }
+
+    private async void UseDefaultModels(object? _1, RoutedEventArgs _2)
+    {
+
+        // TODO: Validate the model and display an error if invalid
+        switch(_vm.ModelIndex)
+        {
+            case 0:
+                _vm.Model = Path.Combine("Resources", "Models", "boys_surface.glb");
+                break;
+            case 1:
+                _vm.Model = Path.Combine("Resources", "Models", "klein_bottle.glb");
+                break;
+            case 2:
+                _vm.Model = Path.Combine("Resources", "Models", "roman_surface.glb");
+                break;
+            case 3:
+                _vm.Model = Path.Combine("Resources", "Models", "triaxial_hexatorus.glb");
+                break;
+            case 4:
+                _vm.Model = Path.Combine("Resources", "Models", "monkey.glb");
+                break;
+        }
         _vm.ModelChanged = true;
     }
 

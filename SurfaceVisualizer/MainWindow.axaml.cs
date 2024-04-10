@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Selection;
 using Avalonia.Media;
 
 namespace SurfaceVisualizer;
@@ -22,6 +23,7 @@ public class MainWindowViewModel
     public bool ModelChanged { get; set; }
     public int PartRotationMode { get; set; }
     public int Shader { get; set; } = 1;
-    public bool UsePolygons {  get; set; } = true;
+    public bool UsePolygons { get; set; } = true;
     public bool UseIntersections { get; set; } = true;
+    public int ModelIndex { get; set; } = 1;
 }
