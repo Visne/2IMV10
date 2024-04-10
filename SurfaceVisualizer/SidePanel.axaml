@@ -101,7 +101,7 @@
 					<CheckBox Name ="UsePolygons" IsChecked="{Binding UsePolygons}" >Polygons</CheckBox>
 					<CheckBox Name ="UseIntersections" IsChecked="{Binding UseIntersections}"  >Intersections</CheckBox>
 
-					<CheckBox Name ="CustomPlanes" IsChecked ="{Binding UseCustomPlanes}" >chose values between 0 and 1</CheckBox>
+					<CheckBox Name ="CustomPlanes" IsChecked ="{Binding UseCustomPlanes}" >chose values between 0 and 1. write number with . as decimal seperator and seperate numbers with , </CheckBox>
 					<TextBox Text="{Binding CustomPlanes}"></TextBox>
 					<Button Click="ReloadButtonClicked">Reload</Button>
 				</StackPanel>
