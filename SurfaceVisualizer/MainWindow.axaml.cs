@@ -25,5 +25,5 @@ public class MainWindowViewModel
     public int Shader { get; set; } = 1;
     public bool UsePolygons { get; set; } = true;
     public bool UseIntersections { get; set; } = true;
-    public int ModelIndex { get; set; } = 1;
+    public int ModelIndex { get; set; } = 0;
 }
