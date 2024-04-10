@@ -4,10 +4,7 @@
              x:Class="SurfaceVisualizer.SidePanel"
              x:DataType="surfaceVisualizer:MainWindowViewModel">
 	<ScrollViewer>
-		<StackPanel Margin="20" >
-
-			
-
+		<StackPanel Margin="10" Spacing="10">
 			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="True">
 				<Expander.Header>Model</Expander.Header>
 				<StackPanel>
