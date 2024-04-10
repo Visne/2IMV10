@@ -124,29 +124,23 @@ public class ModelView : OpenGlControl
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
 
-        if (_vm.UseCustomPlanes)
+        if (_vm.CustomPlanes.Length > 0)
         {
             var (bottom, top) = model.VerticalBounds();
-            Console.WriteLine("topbottom" + bottom + top);
-            Console.WriteLine("using cutom planes" + _vm.CustomPlanes);
-            try
+
+            foreach (var number in _vm.CustomPlanes.Split(";"))
             {
-                foreach (string number in _vm.CustomPlanes.Split(","))
+                var corrected = number.Trim().Replace(',', '.');
+                if (double.TryParse(corrected, CultureInfo.InvariantCulture, out var addHeight))
                 {
-                    Console.WriteLine(number);
-                    NumberFormatInfo provider = new NumberFormatInfo();
-                    provider.NumberDecimalSeparator = ".";
-                    double addheight = Convert.ToDouble(number, provider);
-                    Console.WriteLine(bottom + (top - bottom) * addheight);
-                    _cuttingPlanes.Add(bottom + (top - bottom) * addheight);
+                    _cuttingPlanes.Add(bottom + (top - bottom) * addHeight);
                 }
-            }catch (Exception ex)
-            {
-                Console.WriteLine("wrong cutom plane input");
+                else
+                {
+                    Console.WriteLine($"Failed to parse: {corrected}");
+                }
             }
         }
-
-        Console.WriteLine(_cuttingPlanes[1]);
 
         var models = SplitModel(model, _cuttingPlanes);
 

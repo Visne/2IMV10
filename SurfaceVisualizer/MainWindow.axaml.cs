@@ -26,6 +26,5 @@ public class MainWindowViewModel
     public bool UsePolygons { get; set; } = true;
     public bool UseIntersections { get; set; } = true;
     public int ModelIndex { get; set; } = 0;
-    public bool UseCustomPlanes {  get; set; } = false;
-    public string CustomPlanes { get; set; } = "0.3,0.6";
+    public string CustomPlanes { get; set; } = "";
 }

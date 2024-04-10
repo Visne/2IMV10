@@ -8,29 +8,87 @@
 
 			
 
-			<TextBlock Text="Model:" />
-			<WrapPanel >
-				<StackPanel Margin="0,0,25,0">
-					<ComboBox SelectedIndex="{Binding ModelIndex}">
-						<ComboBoxItem>Boys surface</ComboBoxItem>
-						<ComboBoxItem>Kleine bottle</ComboBoxItem>
-						<ComboBoxItem>Roman surface</ComboBoxItem>
-						<ComboBoxItem>Triaxial hexatorus</ComboBoxItem>
-						<ComboBoxItem>Monkey face</ComboBoxItem>
-					</ComboBox>
-					<Button x:Name="DefaultModelSelector" Click="UseDefaultModels" >Use model</Button>
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="True">
+				<Expander.Header>Model</Expander.Header>
+				<StackPanel>
+					<Grid ColumnDefinitions="*, 8, 100">
+						<ComboBox HorizontalAlignment="Stretch"
+						          SelectedIndex="{Binding ModelIndex}">
+							<ComboBoxItem>Boy's surface</ComboBoxItem>
+							<ComboBoxItem>Klein bottle</ComboBoxItem>
+							<ComboBoxItem>Roman surface</ComboBoxItem>
+							<ComboBoxItem>Triaxial hexatorus</ComboBoxItem>
+							<ComboBoxItem>Monkey face</ComboBoxItem>
+						</ComboBox>
+						<Control Grid.Column="1" />
+						<Button Grid.Column="2"
+						        Click="UseDefaultModels"
+						        HorizontalContentAlignment="Center">Load model</Button>
+					</Grid>
+
+					<Button Margin="0 8 0 0"
+					        HorizontalAlignment="Stretch"
+					        HorizontalContentAlignment="Center"
+					        Click="OpenFileButtonClicked">Load model from filesystem</Button>
 				</StackPanel>
+			</Expander>
 
-				<Button  x:Name="fileSelectButton" Click="OpenFileButtonClicked" >Chose custom upload</Button>
-			</WrapPanel>
-
-			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
-				<Expander.Header>
-					Rendering options
-				</Expander.Header>
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="True">
+				<Expander.Header>Cutting planes</Expander.Header>
 
 				<StackPanel>
+					<TextBlock>Add extra cutting planes</TextBlock>
+					<TextBlock FontSize="11" Foreground="DarkGray" TextWrapping="Wrap">Choose values between 0 and 1. Separate values with a semicolon.</TextBlock>
+					<Grid Margin="0 5 0 0" ColumnDefinitions="*, 70">
+						<TextBox Text="{Binding CustomPlanes}" />
+						<Button Margin="3 0 0 0"
+						        Grid.Column="1"
+						        HorizontalContentAlignment="Center"
+						        Click="ReloadButtonClicked">Reload</Button>
+					</Grid>
 
+					<TextBlock Text="When calculating cutting planes, consider:" Margin="0 15 0 0"/>
+					<CheckBox IsChecked="{Binding UsePolygons}">Polygon count</CheckBox>
+					<CheckBox IsChecked="{Binding UseIntersections}">Intersection count</CheckBox>
+				</StackPanel>
+			</Expander>
+
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="True">
+				<Expander.Header>Model interaction</Expander.Header>
+				<StackPanel>
+					<TextBlock Text="Rotation mode" Margin="0 0 0 10" />
+					<ComboBox SelectedIndex="{Binding PartRotationMode}">
+						<ComboBoxItem>Rotate whole object</ComboBoxItem>
+						<ComboBoxItem>Rotate parts in place</ComboBoxItem>
+					</ComboBox>
+					
+					<TextBlock Text="{Binding #GapSize.Value, StringFormat='Gap size: {0:0.00}'}"
+					           Margin="0 15 0 0"/>
+					<Slider Name="GapSize" Value="{Binding GapSize}" Maximum="3" TickFrequency="0.1" />
+				</StackPanel>
+			</Expander>
+			
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="False">
+				<Expander.Header>Explosion axis</Expander.Header>
+				
+				<StackPanel>
+					<TextBlock Text="{Binding #RotX.Value, StringFormat='Rotation around x-axis: {0:0}°'}" />
+					<Slider Name="RotX" Value="{Binding RotX}" Maximum="360" />
+
+					<TextBlock Text="{Binding #RotY.Value, StringFormat='Rotation around y-axis: {0:0}°'}" />
+					<Slider Name="RotY" Value="{Binding RotY}" Maximum="360" />
+
+					<TextBlock Text="{Binding #RotZ.Value, StringFormat='Rotation around z-axis: {0:0}°'}" />
+					<Slider Name="RotZ" Value="{Binding RotZ}" Maximum="360" />
+
+					<Button Click="ReloadButtonClicked">Reload model</Button>
+				</StackPanel>
+			</Expander>
+			
+			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="False">
+				<Expander.Header>Rendering options</Expander.Header>
+
+				<StackPanel Spacing="8">
 					<TextBlock Text="{Binding #AmbientStrength.Value, StringFormat='Ambient strength: {0:0.00}'}" />
 					<Slider Name="AmbientStrength" Value="{Binding AmbientStrength}" Maximum="1" />
 
@@ -41,88 +99,32 @@
 						<TextBlock Text="Light color" VerticalAlignment="Center" />
 						<!-- Custom color picker that has these values already set -->
 						<ColorPicker Color="{Binding LightColor}"
-									 IsColorPaletteVisible="False"
-									 IsColorPreviewVisible="False"
-									 IsAlphaVisible="False"
-									 IsAlphaEnabled="False"
-									 ColorModel="Hsva" />
+						             IsColorPaletteVisible="False"
+						             IsColorPreviewVisible="False"
+						             IsAlphaVisible="False"
+						             IsAlphaEnabled="False"
+						             ColorModel="Hsva" />
 					</Panel>
 
 					<Panel>
 						<TextBlock Text="Object color" VerticalAlignment="Center" />
 						<ColorPicker Color="{Binding ObjectColor}"
-									 IsColorPaletteVisible="False"
-									 IsColorPreviewVisible="False"
-									 IsAlphaVisible="False"
-									 IsAlphaEnabled="False"
-									 ColorModel="Hsva" />
+						             IsColorPaletteVisible="False"
+						             IsColorPreviewVisible="False"
+						             IsAlphaVisible="False"
+						             IsAlphaEnabled="False"
+						             ColorModel="Hsva" />
 					</Panel>
 
-					<TextBlock Text="Shading:" />
-					<ComboBox SelectedIndex="{Binding Shader}">
-						<ComboBoxItem>Wireframe</ComboBoxItem>
-						<ComboBoxItem>Simple shading</ComboBoxItem>
-						<ComboBoxItem>Hand-drawn</ComboBoxItem>
-					</ComboBox>
-
+					<Grid ColumnDefinitions="120,*">
+						<TextBlock Text="Shading" VerticalAlignment="Center" />
+					<ComboBox Grid.Column="1" HorizontalAlignment="Stretch" SelectedIndex="{Binding Shader}">
+							<ComboBoxItem>Wireframe</ComboBoxItem>
+							<ComboBoxItem>Simple shading</ComboBoxItem>
+							<ComboBoxItem>Hand-drawn</ComboBoxItem>
+						</ComboBox>
+					</Grid>
 				</StackPanel>
-			</Expander>
-
-
-			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
-				<Expander.Header>
-					Exposion axis
-				</Expander.Header>
-				<StackPanel>
-
-					<TextBlock Text="{Binding #RotX.Value, StringFormat='Rotation around x-axis: {0:0}°'}" />
-					<Slider Name="RotX" Value="{Binding RotX}" Maximum="360" />
-
-					<TextBlock Text="{Binding #RotY.Value, StringFormat='Rotation around y-axis: {0:0}°'}" />
-					<Slider Name="RotY" Value="{Binding RotY}" Maximum="360" />
-
-					<TextBlock Text="{Binding #RotZ.Value, StringFormat='Rotation around z-axis: {0:0}°'}" />
-					<Slider Name="RotZ" Value="{Binding RotZ}" Maximum="360" />
-				
-				
-					<Button Click="ReloadButtonClicked">Reload</Button>
-				</StackPanel>
-
-			</Expander>
-
-
-			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
-				<Expander.Header>
-					Cutting planes
-				</Expander.Header>
-
-				<StackPanel>
-					<TextBlock Text="Use in cutting planes:" />
-					<CheckBox Name ="UsePolygons" IsChecked="{Binding UsePolygons}" >Polygons</CheckBox>
-					<CheckBox Name ="UseIntersections" IsChecked="{Binding UseIntersections}"  >Intersections</CheckBox>
-
-					<CheckBox Name ="CustomPlanes" IsChecked ="{Binding UseCustomPlanes}" >chose values between 0 and 1. write number with . as decimal seperator and seperate numbers with , </CheckBox>
-					<TextBox Text="{Binding CustomPlanes}"></TextBox>
-					<Button Click="ReloadButtonClicked">Reload</Button>
-				</StackPanel>
-			</Expander>
-
-
-			<Expander VerticalAlignment="Top" HorizontalAlignment="Stretch" IsExpanded="true">
-				<Expander.Header>
-					Model interactoin
-				</Expander.Header>
-				<StackPanel>
-
-					<TextBlock Text="{Binding #GapSize.Value, StringFormat='Gap size: {0:0.00}'}" />
-					<Slider Name="GapSize" Value="{Binding GapSize}" Maximum="3" TickFrequency="0.1" />
-
-					<ComboBox SelectedIndex="{Binding PartRotationMode}">
-						<ComboBoxItem>Rotate whole object</ComboBoxItem>
-						<ComboBoxItem>Rotate parts in place</ComboBoxItem>
-					</ComboBox>
-				</StackPanel>
-
 			</Expander>
 		</StackPanel>
 	</ScrollViewer>
