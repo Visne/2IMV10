@@ -68,7 +68,7 @@ public partial class SidePanel : UserControl
                 _vm.Model = Path.Combine("Resources", "Models", "triaxial_hexatorus.glb");
                 break;
             case 4:
-                _vm.Model = Path.Combine("Resources", "Models", "monkey.glb");
+                _vm.Model = Path.Combine("Resources", "Models", "monkey.gltf");
                 break;
         }
         _vm.ModelChanged = true;
