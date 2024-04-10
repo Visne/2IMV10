@@ -20,14 +20,13 @@ public class ModelView : OpenGlControl
     private Point _lastMousePos;
     private double _yaw;
     private double _pitch;
-    private double _height;
+    private double _height = 0.8f;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
     private ShaderProgram _basic = null!;
     private ShaderProgram _handDrawn = null!;
     private readonly List<(VertexArrayObject VAO, Model Model)> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
-    private string _currentModel = null!;
     private readonly List<double> _cuttingPlanes = [];
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -162,8 +161,6 @@ public class ModelView : OpenGlControl
 
             _modelVaos.Add((vao, m));
         });
-
-        _currentModel = path;
     }
 
     protected override void Render(TimeSpan deltaTime)
@@ -276,6 +273,7 @@ public class ModelView : OpenGlControl
 
         // TODO: Clamp
         // TODO: Make non-linear?
+        // TODO: e.Delta.Y changes even if the user scrolls outside of the window, causing a sudden jump
         _zoom -= e.Delta.Y * ZoomSensitivity;
     }
 }

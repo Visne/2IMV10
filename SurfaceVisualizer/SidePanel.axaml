@@ -26,7 +26,7 @@
 					<Button Margin="0 8 0 0"
 					        HorizontalAlignment="Stretch"
 					        HorizontalContentAlignment="Center"
-					        Click="OpenFileButtonClicked">Load model from filesystem</Button>
+					        Click="OpenFileButtonClicked">Load model from file system</Button>
 				</StackPanel>
 			</Expander>
 
@@ -36,15 +36,15 @@
 				<StackPanel>
 					<TextBlock>Add extra cutting planes</TextBlock>
 					<TextBlock FontSize="11" Foreground="DarkGray" TextWrapping="Wrap">Choose values between 0 and 1. Separate values with a semicolon.</TextBlock>
-					<Grid Margin="0 5 0 0" ColumnDefinitions="*, 70">
+					<Grid Margin="0 8 0 0" ColumnDefinitions="*, 70">
 						<TextBox Text="{Binding CustomPlanes}" />
-						<Button Margin="3 0 0 0"
+						<Button Margin="8 0 0 0"
 						        Grid.Column="1"
 						        HorizontalContentAlignment="Center"
-						        Click="ReloadButtonClicked">Reload</Button>
+						        Click="ReloadButtonClicked">Apply</Button>
 					</Grid>
 
-					<TextBlock Text="When calculating cutting planes, consider:" Margin="0 15 0 0"/>
+					<TextBlock TextWrapping="Wrap" Text="When calculating cutting planes, consider:" Margin="0 15 0 0"/>
 					<CheckBox IsChecked="{Binding UsePolygons}">Polygon count</CheckBox>
 					<CheckBox IsChecked="{Binding UseIntersections}">Intersection count</CheckBox>
 				</StackPanel>
@@ -78,7 +78,7 @@
 					<TextBlock Text="{Binding #RotZ.Value, StringFormat='Rotation around z-axis: {0:0}°'}" />
 					<Slider Name="RotZ" Value="{Binding RotZ}" Maximum="360" />
 
-					<Button Click="ReloadButtonClicked">Reload model</Button>
+					<Button HorizontalAlignment="Right" Click="ReloadButtonClicked">Apply</Button>
 				</StackPanel>
 			</Expander>
 			
