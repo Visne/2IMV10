@@ -100,7 +100,9 @@
 					<TextBlock Text="Use in cutting planes:" />
 					<CheckBox Name ="UsePolygons" IsChecked="{Binding UsePolygons}" >Polygons</CheckBox>
 					<CheckBox Name ="UseIntersections" IsChecked="{Binding UseIntersections}"  >Intersections</CheckBox>
-				
+
+					<CheckBox Name ="CustomPlanes" IsChecked ="{Binding UseCustomPlanes}" >chose values between 0 and 1</CheckBox>
+					<TextBox Text="{Binding CustomPlanes}"></TextBox>
 					<Button Click="ReloadButtonClicked">Reload</Button>
 				</StackPanel>
 			</Expander>

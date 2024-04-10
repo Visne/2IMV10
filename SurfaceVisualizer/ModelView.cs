@@ -8,6 +8,7 @@ using Common;
 using static PlaneCutter.PlaneCutter;
 using static ModelSplitter.ModelSplitter;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using System.Globalization;
 
 namespace SurfaceVisualizer;
 
@@ -92,6 +93,7 @@ public class ModelView : OpenGlControl
             //Maybe we can add other aspects than the distinct objecss here, like intersectoins.
             PolygonAspectCount.Add(height, (polyCount, intersectionCount));
         }
+
         
         PolygonAspectCount.Add(PolygonAspectCount.Keys.Min() - 0.001, (0,0));
         //PolygonAspectCount.Add(PolygonAspectCount.Keys.Max() + 0.001, (0,0));
@@ -121,6 +123,30 @@ public class ModelView : OpenGlControl
         {
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
+
+        if (_vm.UseCustomPlanes)
+        {
+            var (bottom, top) = model.VerticalBounds();
+            Console.WriteLine("topbottom" + bottom + top);
+            Console.WriteLine("using cutom planes" + _vm.CustomPlanes);
+            try
+            {
+                foreach (string number in _vm.CustomPlanes.Split(","))
+                {
+                    Console.WriteLine(number);
+                    NumberFormatInfo provider = new NumberFormatInfo();
+                    provider.NumberDecimalSeparator = ".";
+                    double addheight = Convert.ToDouble(number, provider);
+                    Console.WriteLine(bottom + (top - bottom) * addheight);
+                    _cuttingPlanes.Add(bottom + (top - bottom) * addheight);
+                }
+            }catch (Exception ex)
+            {
+                Console.WriteLine("wrong cutom plane input");
+            }
+        }
+
+        Console.WriteLine(_cuttingPlanes[1]);
 
         var models = SplitModel(model, _cuttingPlanes);
 
