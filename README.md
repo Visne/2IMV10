@@ -20,7 +20,7 @@ build and run the program:
 
 Alternatively, if you are on Windows, you can use the pre-built binary.
 First, ensure that [.NET Runtime 8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0) is installed.
-Then download binaries.zip, and unzip it.
+Then download [`binaries.zip`](https://github.com/Visne/2IMV10/raw/main/binaries.zip), and unzip it.
 Then the program can be ran by launching `SurfaceVisualizer.exe`.
 
 ## Manual
