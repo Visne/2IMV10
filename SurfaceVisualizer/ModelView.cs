@@ -62,7 +62,16 @@ public class ModelView : OpenGlControl
 
     private void LoadModel(string path)
     {
-        var modelRoot = ModelRoot.Load(path);
+        ModelRoot modelRoot;
+        try
+        {
+            modelRoot = ModelRoot.Load(path);
+        }
+        catch (ArgumentException)
+        {
+            Console.WriteLine("Couldn't find models!");
+            return;
+        }
         var mesh = modelRoot.LogicalMeshes[0];
         var primitive = mesh.Primitives[0];
         var model = new Model(primitive);
