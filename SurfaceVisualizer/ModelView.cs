@@ -7,7 +7,7 @@ using SurfaceVisualizer.Shaders;
 using Common;
 using static PlaneCutter.PlaneCutter;
 using static ModelSplitter.ModelSplitter;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
+//using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Globalization;
 
 namespace SurfaceVisualizer;
@@ -20,13 +20,14 @@ public class ModelView : OpenGlControl
     private Point _lastMousePos;
     private double _yaw;
     private double _pitch;
-    private double _height = 0.8f;
+    private double _height;
     private double _zoom = 1f;
     private ShaderProgram _shaderProgram = null!;
     private ShaderProgram _basic = null!;
     private ShaderProgram _handDrawn = null!;
     private readonly List<(VertexArrayObject VAO, Model Model)> _modelVaos = [];
     private MainWindowViewModel _vm = null!;
+    private string _currentModel = null!;
     private readonly List<double> _cuttingPlanes = [];
 
     protected override void OnDataContextChanged(EventArgs e)
@@ -123,23 +124,26 @@ public class ModelView : OpenGlControl
             _cuttingPlanes.Add((changePoints[i - 1] + changePoints[i]) / 2);
         }
 
-        if (_vm.CustomPlanes.Length > 0)
+        var (bottom, top) = model.VerticalBounds();
+        Console.WriteLine("topbottom" + bottom + top);
+        Console.WriteLine("using cutom planes" + _vm.CustomPlanes);
+        try
         {
-            var (bottom, top) = model.VerticalBounds();
-
-            foreach (var number in _vm.CustomPlanes.Split(";"))
+            foreach (string number in _vm.CustomPlanes.Split(","))
             {
-                var corrected = number.Trim().Replace(',', '.');
-                if (double.TryParse(corrected, CultureInfo.InvariantCulture, out var addHeight))
-                {
-                    _cuttingPlanes.Add(bottom + (top - bottom) * addHeight);
-                }
-                else
-                {
-                    Console.WriteLine($"Failed to parse: {corrected}");
-                }
+                Console.WriteLine(number);
+                NumberFormatInfo provider = new NumberFormatInfo();
+                provider.NumberDecimalSeparator = ".";
+                double addheight = Convert.ToDouble(number, provider);
+                Console.WriteLine(bottom + (top - bottom) * addheight);
+                _cuttingPlanes.Add(bottom + (top - bottom) * addheight);
             }
+        }catch (Exception ex)
+        {
+            Console.WriteLine("wrong cutom plane input");
         }
+        
+        Console.WriteLine(_cuttingPlanes[1]);
 
         var models = SplitModel(model, _cuttingPlanes);
 
@@ -161,6 +165,8 @@ public class ModelView : OpenGlControl
 
             _modelVaos.Add((vao, m));
         });
+
+        _currentModel = path;
     }
 
     protected override void Render(TimeSpan deltaTime)
@@ -273,7 +279,6 @@ public class ModelView : OpenGlControl
 
         // TODO: Clamp
         // TODO: Make non-linear?
-        // TODO: e.Delta.Y changes even if the user scrolls outside of the window, causing a sudden jump
         _zoom -= e.Delta.Y * ZoomSensitivity;
     }
 }
